@@ -12,16 +12,16 @@ import retrofit2.http.POST
 interface MovieService {
 
     @GET("movies/getAllMovies.php")
-    fun getMovies(): Response<MovieResponse>
+    suspend fun getMovies(): Response<MovieResponse>
 
     @POST("movies/getAllMovieCart.php")
     @FormUrlEncoded
 
-    fun getMovieCart(@Field("username") username: String = "enesay"): Response<MovieCartResponse>
+    suspend fun getMovieCart(@Field("username") username: String = "enesay"): Response<MovieCartResponse>
 
     @POST("movies/insertMovie.php")
     @FormUrlEncoded
-    fun insertMovie(
+    suspend fun insertMovie(
         @Field("name") movie_name: String,
         @Field("image") movie_image: String,
         @Field("price") movie_price: Int,
@@ -36,7 +36,7 @@ interface MovieService {
 
     @POST("movies/deleteMovie.php")
     @FormUrlEncoded
-    fun deleteMovie(
+    suspend fun deleteMovie(
         @Field("cartId") cart_id: String, @Field("userName") user_name: String
     ): Response<MovieActionResponse>
 
