@@ -14,10 +14,9 @@ interface MovieService {
     @GET("movies/getAllMovies.php")
     suspend fun getMovies(): Response<MovieResponse>
 
-    @POST("movies/getAllMovieCart.php")
+    @POST("movies/getMovieCart.php")
     @FormUrlEncoded
-
-    suspend fun getMovieCart(@Field("username") username: String = "enesay"): Response<MovieCartResponse>
+    suspend fun getCartMovies(@Field("userName") username: String = "enes_ay"): Response<MovieCartResponse>
 
     @POST("movies/insertMovie.php")
     @FormUrlEncoded

@@ -10,4 +10,6 @@ data class MovieCart(
     val year: Int,
     val director: String,
     val description: String,
+    val orderAmount: Int,
+    val userName: String
 )

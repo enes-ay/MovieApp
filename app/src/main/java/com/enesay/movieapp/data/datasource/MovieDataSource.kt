@@ -3,6 +3,7 @@ package com.enesay.movieapp.data.datasource
 import android.util.Log
 import com.enesay.movieapp.data.model.Movie
 import com.enesay.movieapp.data.model.MovieActionResponse
+import com.enesay.movieapp.data.model.MovieCart
 import com.enesay.movieapp.service.MovieService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -46,6 +47,15 @@ class MovieDataSource(var movieService: MovieService) {
             return@withContext response.body() ?: MovieActionResponse(0, "")
         } else {
             return@withContext MovieActionResponse(0, "")
+        }
+    }
+
+    suspend fun getCartMovies(): List<MovieCart> = withContext(Dispatchers.IO) {
+        val response = movieService.getCartMovies()
+        if (response.isSuccessful) {
+            return@withContext response.body()?.movie_cart ?: listOf()
+        } else {
+            return@withContext listOf()
         }
     }
 }

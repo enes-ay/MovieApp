@@ -8,4 +8,5 @@ class MovieRepository @Inject constructor(val movieDataSource: MovieDataSource) 
 
     suspend fun getAllMovies() = movieDataSource.getAllMovies()
     suspend fun addMovieToCart(movie: Movie) = movieDataSource.addMovieToCart(movie)
+    suspend fun getCartMovies() = movieDataSource.getCartMovies()
 }
