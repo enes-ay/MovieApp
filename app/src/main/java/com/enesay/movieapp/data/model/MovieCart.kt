@@ -1,7 +1,7 @@
 package com.enesay.movieapp.data.model
 
 data class MovieCart(
-    val id: Int,
+    val cartId: Int,
     val name: String,
     val image : String,
     val price: Int,

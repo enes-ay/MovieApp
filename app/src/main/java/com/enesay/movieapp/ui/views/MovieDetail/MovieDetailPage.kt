@@ -85,7 +85,7 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                         Button(
                             onClick = {
                                 count++
-                                movieDetailViewModel.addToCart(movie)
+                                movieDetailViewModel.addToCart(movie.name, movie.image, movie.price, movie.category, movie.rating, movie.year, movie.director, movie.description)
                                 navController.navigate("cart")
                             },
                             modifier = Modifier

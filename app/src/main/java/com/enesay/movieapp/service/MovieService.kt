@@ -36,7 +36,7 @@ interface MovieService {
     @POST("movies/deleteMovie.php")
     @FormUrlEncoded
     suspend fun deleteMovie(
-        @Field("cartId") cart_id: String, @Field("userName") user_name: String
+        @Field("cartId") cart_id: Int, @Field("userName") user_name: String
     ): Response<MovieActionResponse>
 
 }

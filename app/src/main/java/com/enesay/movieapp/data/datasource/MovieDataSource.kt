@@ -28,18 +28,27 @@ class MovieDataSource(var movieService: MovieService) {
         }
     }
 
-    suspend fun addMovieToCart(movie: Movie): MovieActionResponse = withContext(
+    suspend fun addMovieToCart(
+        movie_name: String,
+        movie_image: String,
+        movie_price: Int,
+        movie_category: String,
+        movie_rating: Double,
+        movie_year: Int,
+        movie_director: String,
+        movie_description: String
+    ): MovieActionResponse = withContext(
         Dispatchers.IO
     ) {
         val response = movieService.insertMovie(
-            movie.name,
-            movie.image,
-            movie.price,
-            movie.category,
-            movie.rating,
-            movie.year,
-            movie.director,
-            movie.description,
+            movie_name,
+            movie_image,
+            movie_price,
+            movie_category,
+            movie_rating,
+            movie_year,
+            movie_director,
+            movie_description,
             1,
             "enes_ay"
         )
@@ -56,6 +65,18 @@ class MovieDataSource(var movieService: MovieService) {
             return@withContext response.body()?.movie_cart ?: listOf()
         } else {
             return@withContext listOf()
+        }
+    }
+
+    suspend fun deleteMovieFromCart(
+        cartId: Int,
+        userName: String = "enes_ay"
+    ): MovieActionResponse = withContext(Dispatchers.IO) {
+        val response = movieService.deleteMovie(cartId, userName)
+        if (response.isSuccessful) {
+            return@withContext response.body() ?: MovieActionResponse(0, "")
+        } else {
+            return@withContext MovieActionResponse(0, "")
         }
     }
 }
