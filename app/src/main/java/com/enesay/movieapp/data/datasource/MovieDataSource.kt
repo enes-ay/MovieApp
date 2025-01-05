@@ -7,6 +7,7 @@ import com.enesay.movieapp.data.model.MovieCart
 import com.enesay.movieapp.service.MovieService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.EOFException
 
 class MovieDataSource(var movieService: MovieService) {
 
@@ -36,7 +37,8 @@ class MovieDataSource(var movieService: MovieService) {
         movie_rating: Double,
         movie_year: Int,
         movie_director: String,
-        movie_description: String
+        movie_description: String,
+        count: Int
     ): MovieActionResponse = withContext(
         Dispatchers.IO
     ) {
@@ -49,7 +51,7 @@ class MovieDataSource(var movieService: MovieService) {
             movie_year,
             movie_director,
             movie_description,
-            1,
+            order_amount = count,
             "enes_ay"
         )
         if (response.isSuccessful) {
@@ -60,10 +62,16 @@ class MovieDataSource(var movieService: MovieService) {
     }
 
     suspend fun getCartMovies(): List<MovieCart> = withContext(Dispatchers.IO) {
-        val response = movieService.getCartMovies()
-        if (response.isSuccessful) {
-            return@withContext response.body()?.movie_cart ?: listOf()
-        } else {
+        try {
+            val response = movieService.getCartMovies()
+            if (response.isSuccessful) {
+                return@withContext response.body()?.movie_cart ?: listOf()
+            } else {
+                return@withContext listOf()
+            }
+        } catch (e: EOFException) {
+            return@withContext listOf()
+        } catch (e: Exception) {
             return@withContext listOf()
         }
     }
@@ -72,11 +80,18 @@ class MovieDataSource(var movieService: MovieService) {
         cartId: Int,
         userName: String = "enes_ay"
     ): MovieActionResponse = withContext(Dispatchers.IO) {
-        val response = movieService.deleteMovie(cartId, userName)
-        if (response.isSuccessful) {
-            return@withContext response.body() ?: MovieActionResponse(0, "")
-        } else {
+        try {
+            val response = movieService.deleteMovie(cartId, userName)
+            if (response.isSuccessful) {
+                return@withContext response.body() ?: MovieActionResponse(0, "")
+            } else {
+                return@withContext MovieActionResponse(0, "")
+            }
+        } catch (e: EOFException) {
+            return@withContext MovieActionResponse(0, "eof exception")
+        } catch (e: Exception) {
             return@withContext MovieActionResponse(0, "")
         }
+
     }
 }

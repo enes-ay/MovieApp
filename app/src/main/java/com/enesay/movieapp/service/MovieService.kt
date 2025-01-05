@@ -29,7 +29,7 @@ interface MovieService {
         @Field("year") movie_year: Int,
         @Field("director") movie_director: String,
         @Field("description") movie_description: String,
-        @Field("orderAmount") order_amount: Int,
+        @Field("orderAmount") order_amount: Int = 1,
         @Field("userName") user_name: String
     ): Response<MovieActionResponse>
 

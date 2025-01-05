@@ -16,8 +16,9 @@ class MovieRepository @Inject constructor(val movieDataSource: MovieDataSource) 
         movie_rating: Double,
         movie_year: Int,
         movie_director: String,
-        movie_description: String
-    ) = movieDataSource.addMovieToCart(movie_name, movie_image, movie_price, movie_category, movie_rating, movie_year, movie_director, movie_description)
+        movie_description: String,
+        amount: Int
+    ) = movieDataSource.addMovieToCart(movie_name, movie_image, movie_price, movie_category, movie_rating, movie_year, movie_director, movie_description, amount)
 
     suspend fun getCartMovies() = movieDataSource.getCartMovies()
     suspend fun deleteMovieFromCart(cartId: Int) = movieDataSource.deleteMovieFromCart(cartId)
