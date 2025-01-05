@@ -19,16 +19,30 @@ class MovieDetailViewModel @Inject constructor(var movieRepository: MovieReposit
 
     val result = MutableLiveData<String>()
 
-    fun addToCart(  movie_name: String,
-                    movie_image: String,
-                    movie_price: Int,
-                    movie_category: String,
-                    movie_rating: Double,
-                    movie_year: Int,
-                    movie_director: String,
-                    movie_description: String) {
+    fun addToCart(
+        movie_name: String,
+        movie_image: String,
+        movie_price: Int,
+        movie_category: String,
+        movie_rating: Double,
+        movie_year: Int,
+        movie_director: String,
+        movie_description: String,
+        amount: Int
+    ) {
         CoroutineScope(Dispatchers.Main).launch {
-            if (movieRepository.addMovieToCart(movie_name, movie_image, movie_price, movie_category, movie_rating, movie_year, movie_director, movie_description).success == 1) {
+            if (movieRepository.addMovieToCart(
+                    movie_name,
+                    movie_image,
+                    movie_price,
+                    movie_category,
+                    movie_rating,
+                    movie_year,
+                    movie_director,
+                    movie_description,
+                    amount
+                ).success == 1
+            ) {
                 result.value = "success"
             } else {
                 result.value = "error"
