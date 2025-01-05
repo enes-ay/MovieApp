@@ -1,4 +1,4 @@
-package com.enesay.movieapp.ui.views
+package com.enesay.movieapp.ui.views.Splash
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

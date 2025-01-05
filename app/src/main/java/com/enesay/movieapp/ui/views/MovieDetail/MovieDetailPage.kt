@@ -52,6 +52,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enesay.movieapp.R
 import com.enesay.movieapp.data.model.Movie
+import com.enesay.movieapp.utils.Constants.IMAGE_BASE_URL
 import com.skydoves.landscapist.glide.GlideImage
 
 
@@ -100,16 +101,16 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                 // Movie title
                 Text(
                     text = movie.name,
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.Black,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
 
                 // Movie poster
                 GlideImage(
-                    imageModel = "http://kasimadalan.pe.hu/movies/images/${movie.image}",
+                    imageModel = "$IMAGE_BASE_URL${movie.image}",
                     modifier = Modifier
                         .height(400.dp)
                         .fillMaxWidth()
@@ -129,22 +130,26 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                     Text(
                         text = "Director: ${movie.director}",
                         color = Color.White,
-                        fontSize = 16.sp
+                        fontSize = 19.sp,
+                        fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = "Year: ${movie.year}",
                         color = Color.White,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = "Category: ${movie.category}",
                         color = Color.White,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Rating: ${movie.rating}/10",
+                        text = "IMDB: ${movie.rating}/10",
                         color = Color.White,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
 
