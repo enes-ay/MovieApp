@@ -5,14 +5,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.enesay.movieapp.R
+import com.enesay.movieapp.data.model.Movie
 import com.enesay.movieapp.data.model.MovieCart
 import com.enesay.movieapp.utils.Constants.IMAGE_BASE_URL
 import com.google.gson.Gson
@@ -96,71 +103,81 @@ fun CartPage(navController: NavHostController) {
             ) {
                 Text(text = "No movie found")
             }
-        }
+        } else {
+          Column(modifier = Modifier.fillMaxSize()) {
+              LazyColumn(
+                  modifier = Modifier
+                      .fillMaxSize()
+                      .weight(3f)
+                      .padding(paddingValues)
+              ) {
+                  items(groupedmovies.keys.toList()) { movieName ->
+                      val orderAmount = groupedmovies[movieName] ?: 0
+                      val movie = cartItems.first { it.name == movieName }
+                      Log.d("cart page", "movie: ${movie.orderAmount}")
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-        ) {
+                      CartItem(
+                          movie = movie.copy(orderAmount = orderAmount),
+                          onClick = {
+                              var movieJson = Gson().toJson(movie)
+                              navController.navigate("movieDetail/$movieJson") {
+                                  popUpTo("cart")
+                              }
+                          },
+                          onDelete = {
+                              cartViewmodel.removeFromCart(movie.cartId)
+                          },
+                          onAddToCart = {
+                              cartViewmodel.addToCart(
+                                  movie.name,
+                                  movie.image,
+                                  movie.price,
+                                  movie.category,
+                                  movie.rating,
+                                  movie.year,
+                                  movie.director,
+                                  movie.description,
+                                  amount = 1
+                              )
+                          }
+                      )
+                  }
+                  // Cart Confirm
 
-            LazyColumn(
-                modifier = Modifier
-                    .weight(4f)
-                    .fillMaxWidth()
-            ) {
-                items(groupedmovies.keys.toList()) { movieName ->
-                    val orderAmount = groupedmovies[movieName] ?: 0
-                    val movie = cartItems.first { it.name == movieName }
-                    Log.d("cart page", "movie: ${movie.orderAmount}")
-
-                    CartItem(
-                        movie = movie.copy(orderAmount = orderAmount),
-                        onClick = {
-                            var movieJson = Gson().toJson(movie)
-                            navController.navigate("movieDetail/$movieJson") {
-                                popUpTo("cart")
-                            }
-                        },
-                        onDelete = {
-
-                        },
-                        onAddToCart = {
-
-                        }
-                    )
-                }
-            }
-
-            // Fixed bottom section
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Confirm Cart Button
-                Button(
-                    modifier = Modifier
-                        .defaultMinSize(minWidth = 200.dp)
-                        .padding(end = 10.dp),
-                    onClick = { /* Confirm Cart action */ },
-                    shape = RectangleShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.txt_confirmCart),
-                        color = Color.White,
-                        fontSize = 23.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Text(
-                    text = stringResource(id = R.string.txt_total) +" ${totalPrice}₺",
-                    style = MaterialTheme.typography.h5,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-            }
+              }
+              Row(
+                  modifier = Modifier
+                      .fillMaxWidth()
+                      .wrapContentHeight()
+                      .weight(1f)
+                      .padding(16.dp)
+                      .padding(bottom = 56.dp),
+                  horizontalArrangement = Arrangement.SpaceBetween,
+                  verticalAlignment = Alignment.CenterVertically
+              ) {
+                  // Confirm Cart Button
+                  Button(
+                      modifier = Modifier
+                          .defaultMinSize(minWidth = 200.dp)
+                          .padding(end = 10.dp),
+                      onClick = { /* Confirm Cart action */ },
+                      shape = RectangleShape,
+                      colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                  ) {
+                      Text(
+                          text = stringResource(id = R.string.txt_confirmCart),
+                          color = Color.White,
+                          fontSize = 23.sp,
+                          fontWeight = FontWeight.Bold
+                      )
+                  }
+                  Text(
+                      text = stringResource(id = R.string.txt_total) + " ${totalPrice}₺",
+                      style = MaterialTheme.typography.h5,
+                      modifier = Modifier.align(Alignment.CenterVertically)
+                  )
+              }
+          }
 
         }
     }
@@ -173,8 +190,6 @@ fun CartItem(
     onClick: () -> Unit,
     onDelete: () -> Unit,
     onAddToCart: () -> Unit,
-    initialCount: Int = 0, // Use this to initialize the count, maybe fetched from the cart
-
 ) {
     var count by remember { mutableStateOf(movie.orderAmount) }
     Log.d("cart item", "count: $count")
@@ -202,7 +217,7 @@ fun CartItem(
 
                 GlideImage(
                     modifier = Modifier
-                        .size(160.dp)
+                        .size(170.dp)
                         .weight(1f),
                     imageModel = "$IMAGE_BASE_URL${movie.image}",
                     contentScale = ContentScale.Crop,
@@ -276,7 +291,7 @@ fun CartItem(
                         }
 
                         if (count > 0) {
-                          Text(
+                            Text(
                                 text = "$count",
                                 fontSize = 22.sp,
                                 modifier = Modifier.padding(horizontal = 16.dp)

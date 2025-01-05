@@ -28,9 +28,9 @@ class CartViewModel @Inject constructor(val movieRepository: MovieRepository) : 
         }
     }
 
-    fun addToCart(movie_name: String, movie_image: String, movie_price: Int, movie_category: String, movie_rating: Double, movie_year: Int, movie_director: String, movie_description: String) {
+    fun addToCart(movie_name: String, movie_image: String, movie_price: Int, movie_category: String, movie_rating: Double, movie_year: Int, movie_director: String, movie_description: String, amount: Int) {
         CoroutineScope(Dispatchers.Main).launch {
-            movieRepository.addMovieToCart(movie_name, movie_image, movie_price, movie_category, movie_rating, movie_year, movie_director, movie_description)
+            movieRepository.addMovieToCart(movie_name, movie_image, movie_price, movie_category, movie_rating, movie_year, movie_director, movie_description, amount)
             getCartMovies()
         }
     }
