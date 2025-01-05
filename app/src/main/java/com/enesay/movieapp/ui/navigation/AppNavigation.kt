@@ -3,12 +3,12 @@ package com.enesay.movieapp.ui.navigation
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import com.enesay.movieapp.ui.views.CartPage
-import com.enesay.movieapp.ui.views.HomePage
+import com.enesay.movieapp.data.model.Movie
+import com.enesay.movieapp.ui.views.Cart.CartPage
+import com.enesay.movieapp.ui.views.Home.HomePage
+import com.enesay.movieapp.ui.views.MovieDetail.MovieDetailPage
 import com.enesay.movieapp.ui.views.SplashPage
 import com.google.gson.Gson
 
@@ -25,6 +25,14 @@ fun AppNavigation(navController: NavHostController, paddingValues: PaddingValues
             }
             composable("cart") {
                 CartPage(navController = navController)
+            }
+            composable("favorites") {
+                CartPage(navController = navController)
+            }
+            composable("movieDetail/{movie}") {
+                val movie = it.arguments?.getString("movie")
+                val movieObject = Gson().fromJson(movie, Movie::class.java)
+                MovieDetailPage(navController = navController, movieObject)
             }
         }
     }

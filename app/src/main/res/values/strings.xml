@@ -3,4 +3,9 @@
     <string name="item_movie">Movies</string>
     <string name="item_cart">Cart</string>
     <string name="item_favorite">Favorites</string>
+    <string name="txt_add_to_cart">Add to Cart</string>
+    <string name="txt_go_to_cart">Go to Cart</string>
+    <string name="txt_total">Total</string>
+    <string name="txt_cart">Cart</string>
+    <string name="txt_confirmCart">Confirm Cart</string>
 </resources>
