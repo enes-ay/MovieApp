@@ -60,8 +60,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,6 +79,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enesay.movieapp.R
 import com.enesay.movieapp.data.model.Movie
+import com.enesay.movieapp.ui.views.Favorites.FavoritesViewModel
 import com.enesay.movieapp.utils.Constants
 import com.google.gson.Gson
 import com.skydoves.landscapist.glide.GlideImage
@@ -90,6 +89,7 @@ import com.skydoves.landscapist.glide.GlideImage
 fun HomePage(navController: NavController) {
 
     val homeViewModel = hiltViewModel<HomeViewModel>()
+    val favoritesViewModel = hiltViewModel<FavoritesViewModel>()
     val movies by homeViewModel.movies.observeAsState()
     var searchQuery by remember { mutableStateOf("") } // Arama terimini saklar
     var filteredMovieList = movies?.filter { movie ->
@@ -99,9 +99,11 @@ fun HomePage(navController: NavController) {
     var isFocused by remember { mutableStateOf(false) }
     val sortOption by homeViewModel.sortOption.collectAsState()
     var isSortBottomSheetVisible by remember { mutableStateOf(false) }
+    val favList by favoritesViewModel.favoriteMovies.observeAsState()
 
     LaunchedEffect(true) {
         homeViewModel.getMovies()
+        favoritesViewModel.getFavoriteMovies("4p9Y5d9wQwQYMWtnZG5l")
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -243,16 +245,18 @@ fun HomePage(navController: NavController) {
             ) {
                 if (movies != null) {
                     items(filteredMovieList) { movie ->
-                        MovieCard(movie = movie, onAddToCart = {
-
-                        }, onRemoveFromCart = {
-                        }, onClick = {
+                        MovieCard(movie = movie,
+                                onClick = {
                             val movieJson = Gson().toJson(movie)
                             navController.navigate(
                                 "movieDetail/${movieJson}"
 
                             )
-                        }, onFavoriteClick = {})
+                        }, onFavoriteClick = { // Add movie to favorite list
+                                favoritesViewModel.addFavoriteMovie("4p9Y5d9wQwQYMWtnZG5l", it)
+                            },
+                            isFavorite = favList?.any { it.id == movie.id } ?: false
+                            )
                     }
                 }
 
@@ -318,13 +322,12 @@ private fun SortModalBottomSheet(
 fun MovieCard(
     movie: Movie,
     initialCount: Int = 0,
-    onAddToCart: () -> Unit,
-    onRemoveFromCart: (Movie) -> Unit,
     onClick: () -> Unit,
-    onFavoriteClick: (Movie) -> Unit
+    onFavoriteClick: (Movie) -> Unit,
+    isFavorite: Boolean = false
 ) {
     var count by remember { mutableStateOf(initialCount) }
-    var isFavorite by remember { mutableStateOf(false) }
+    var isFavorite by remember { mutableStateOf(isFavorite) }
 
     Card(
         modifier = Modifier
@@ -340,35 +343,6 @@ fun MovieCard(
                 .fillMaxSize()
                 .background(Color.White)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.Center)
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f))
-                        )
-                    )
-                    .padding(10.dp)
-            ) {
-                // Favorite button at the top-right corner
-                IconButton(
-                    onClick = {
-                        isFavorite = !isFavorite
-                        onFavoriteClick(movie)
-                    },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(5.dp)
-                ) {
-                    Icon(
-                        modifier = Modifier.size(30.dp),
-                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorite button",
-                        tint = if (isFavorite) Color.Red else Color.White,
-                    )
-                }
-            }
             // Movie image with overlay
             GlideImage(
                 modifier = Modifier.fillMaxSize(),
@@ -376,6 +350,43 @@ fun MovieCard(
                 contentDescription = "${movie.name} image",
                 contentScale = ContentScale.Crop
             )
+
+            // Top-right corner favorite button
+            IconButton(
+                onClick = {
+                    isFavorite = !isFavorite
+                    onFavoriteClick(movie)
+                },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            ) {
+                Icon(
+                    modifier = Modifier.size(30.dp),
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Favorite button",
+                    tint = if (isFavorite) Color.Red else Color.White,
+                )
+            }
+
+            // IMDb rating badge on the top-left corner
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(8.dp)
+                    .background(
+                        color = Color(0xFFf5c518),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(horizontal = 6.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    text = "IMDb ${movie.rating}",
+                    color = Color.Black,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
             // Overlay for price and actions
             Box(
@@ -416,8 +427,7 @@ fun MovieCard(
                     }
                 }
             }
-
-
         }
     }
 }
+

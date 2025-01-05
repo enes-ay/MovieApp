@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.enesay.movieapp.data.model.Movie
+import com.enesay.movieapp.data.repository.FirebaseRepository
 import com.enesay.movieapp.data.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(val repository: MovieRepository) : ViewModel() {
+class HomeViewModel @Inject constructor(val repository: MovieRepository, val favoritesRepository: FirebaseRepository) : ViewModel() {
     private val _movies = MutableLiveData<List<Movie>>()
     val movies: LiveData<List<Movie>> = _movies
 
@@ -24,6 +25,8 @@ class HomeViewModel @Inject constructor(val repository: MovieRepository) : ViewM
 
     init {
         getMovies()
+        // todo migrate to firebase auth asap
+        favoritesRepository.getFavoriteMovies("4p9Y5d9wQwQYMWtnZG5l")
     }
 
     fun getMovies() {
