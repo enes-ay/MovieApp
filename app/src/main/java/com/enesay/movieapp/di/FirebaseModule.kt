@@ -2,6 +2,7 @@ package com.enesay.movieapp.di
 
 import com.enesay.movieapp.data.datasource.FirebaseDataSource
 import com.enesay.movieapp.data.repository.FirebaseRepository
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
@@ -33,5 +34,7 @@ object FirebaseModule {
         return FirebaseRepository(firebaseDataSource)
     }
 
-
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth() = FirebaseAuth.getInstance()
 }
