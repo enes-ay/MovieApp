@@ -1,6 +1,7 @@
 package com.enesay.movieapp.ui.views.Favorites
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -66,17 +68,24 @@ fun FavoritesPage(navController: NavController) {
     ) { paddingValues ->
         if (favoriteMovies.isNullOrEmpty()) {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "No favorites found")
+                Text(
+                    text = stringResource(R.string.txt_no_movies),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 18.sp
+                )
             }
         } else {
 
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(paddingValues),
                 contentPadding = PaddingValues(
                     bottom = WindowInsets.systemBars.asPaddingValues()
@@ -84,7 +93,7 @@ fun FavoritesPage(navController: NavController) {
                 )
             ) {
                 favoriteMovies?.let { movies ->
-                    items(items = movies, key = { movie -> movie.id}) { movie ->
+                    items(items = movies, key = { movie -> movie.id }) { movie ->
                         Log.d("movies", "${movies} ")
                         MovieCard(movie = movie,
                             onFavoriteClick = {

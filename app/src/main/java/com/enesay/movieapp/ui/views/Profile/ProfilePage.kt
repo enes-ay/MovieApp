@@ -320,7 +320,7 @@ fun LanguageSelectionBottomSheet(
                             selectedLocale = language.second
                             onLanguageSelected(language.second)
                         },
-                        colors = RadioButtonDefaults.colors(selectedColor = PrimaryBlack)
+                        colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.onPrimary)
                         )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(

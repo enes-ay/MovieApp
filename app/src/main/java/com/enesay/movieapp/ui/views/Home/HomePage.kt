@@ -80,6 +80,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.enesay.movieapp.R
 import com.enesay.movieapp.data.model.Movie
 import com.enesay.movieapp.ui.theme.PrimaryBlack
+import com.enesay.movieapp.ui.theme.PrimaryWhite
 import com.enesay.movieapp.ui.views.Favorites.FavoritesViewModel
 import com.enesay.movieapp.utils.Constants
 import com.google.gson.Gson
@@ -111,7 +112,7 @@ fun HomePage(navController: NavController) {
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
             // Top App Bar with Search and Filter Row
-            Column (modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+            Column(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
                 // Top App Bar
                 TopAppBar(
                     title = {
@@ -192,7 +193,7 @@ fun HomePage(navController: NavController) {
                         onClick = {
                             isSortBottomSheetVisible = true
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlack),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .weight(1f)
@@ -201,12 +202,14 @@ fun HomePage(navController: NavController) {
                         Icon(
                             painter = painterResource(R.drawable.ic_sort),
                             contentDescription = "Sort Icon",
-                            tint = Color.White
+                            tint = PrimaryWhite
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = stringResource(id = R.string.txt_sort),
-                            color = Color.White
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = PrimaryWhite
                         )
                     }
                     // Filter Button
@@ -214,7 +217,7 @@ fun HomePage(navController: NavController) {
                         onClick = {
                             // Handle filter logic
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlack),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .weight(1f)
@@ -223,12 +226,14 @@ fun HomePage(navController: NavController) {
                         Icon(
                             painter = painterResource(R.drawable.ic_filter),
                             contentDescription = "Filter Icon",
-                            tint = Color.White
+                            tint = PrimaryWhite
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = stringResource(id = R.string.txt_filter),
-                            color = Color.White
+                            color = PrimaryWhite,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                 }
@@ -247,10 +252,12 @@ fun HomePage(navController: NavController) {
                         CircularProgressIndicator()
                     }
                 }
+
                 is MoviesUiState.Success -> {
-                    val filteredMovieList = (moviesState as MoviesUiState.Success).movies.filter { movie ->
-                        movie.name.contains(searchQuery, ignoreCase = true)
-                    }
+                    val filteredMovieList =
+                        (moviesState as MoviesUiState.Success).movies.filter { movie ->
+                            movie.name.contains(searchQuery, ignoreCase = true)
+                        }
                     LazyVerticalGrid(
                         modifier = Modifier
                             .fillMaxSize()
@@ -266,7 +273,7 @@ fun HomePage(navController: NavController) {
                                 movie = movie,
                                 onClick = {
                                     val movieJson = Gson().toJson(movie)
-                                    navController.navigate("movieDetail/${movieJson}"){
+                                    navController.navigate("movieDetail/${movieJson}") {
                                         popUpTo(navController.graph.findStartDestination().id) {
                                             saveState = true
                                         }
@@ -276,9 +283,15 @@ fun HomePage(navController: NavController) {
                                 },
                                 onFavoriteClick = {
                                     if (favList?.any { it.id == movie.id } == true) {
-                                        favoritesViewModel.removeFavoriteMovie("4p9Y5d9wQwQYMWtnZG5l", it.id)
+                                        favoritesViewModel.removeFavoriteMovie(
+                                            "4p9Y5d9wQwQYMWtnZG5l",
+                                            it.id
+                                        )
                                     } else {
-                                        favoritesViewModel.addFavoriteMovie("4p9Y5d9wQwQYMWtnZG5l", it)
+                                        favoritesViewModel.addFavoriteMovie(
+                                            "4p9Y5d9wQwQYMWtnZG5l",
+                                            it
+                                        )
                                     }
                                 },
                                 isFavorite = favList?.any { it.id == movie.id } ?: false
@@ -286,11 +299,13 @@ fun HomePage(navController: NavController) {
                         }
                     }
                 }
+
                 is MoviesUiState.Error -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text("Error: ${(moviesState as MoviesUiState.Error).message}")
                     }
                 }
+
                 is MoviesUiState.Empty -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(text = stringResource(id = R.string.txt_no_movies))
@@ -325,8 +340,10 @@ private fun SortModalBottomSheet(
             onDismissRequest()
         }
     ) {
-        Column(modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 text = stringResource(id = R.string.txt_sort),
                 fontSize = 20.sp,
