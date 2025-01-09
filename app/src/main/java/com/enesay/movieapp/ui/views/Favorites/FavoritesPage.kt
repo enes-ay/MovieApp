@@ -64,7 +64,7 @@ fun FavoritesPage(navController: NavController) {
         }
 
     ) { paddingValues ->
-        if(favoriteMovies == null) {
+        if (favoriteMovies.isNullOrEmpty()) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
@@ -72,8 +72,7 @@ fun FavoritesPage(navController: NavController) {
             ) {
                 Text(text = "No favorites found")
             }
-        }
-        else {
+        } else {
 
             LazyColumn(
                 modifier = Modifier
@@ -84,9 +83,10 @@ fun FavoritesPage(navController: NavController) {
                         .calculateBottomPadding() + 56.dp // Bottom nav yüksekliğini ekle
                 )
             ) {
-                favoriteMovies?.let {
-                    items(it) {
-                        MovieCard(movie = it,
+                favoriteMovies?.let { movies ->
+                    items(items = movies, key = { movie -> movie.id}) { movie ->
+                        Log.d("movies", "${movies} ")
+                        MovieCard(movie = movie,
                             onFavoriteClick = {
                                 favoritesViewModel.removeFavoriteMovie(
                                     userId = "4p9Y5d9wQwQYMWtnZG5l",
@@ -94,14 +94,14 @@ fun FavoritesPage(navController: NavController) {
                                 )
                                 Log.d("fav", it.id.toString())
                             }, onClick = {
-                                val movieJson = Gson().toJson(it)
+                                val movieJson = Gson().toJson(movie)
                                 navController.navigate("movieDetail/${movieJson}")
                             },
-                            isFavorite = isFavorite
+                            isFavorite = true
                         )
                     }
                 }
             }
         }
-        }
+    }
 }
