@@ -7,4 +7,5 @@ sealed class BottomNavItem(val route: String, @DrawableRes val iconId: Int, @Str
     object Home : BottomNavItem("home",  R.drawable.ic_movie, R.string.item_movie)
     object Favorites : BottomNavItem("favorites",  R.drawable.ic_favorite, R.string.item_favorite)
     object Cart : BottomNavItem("cart", R.drawable.ic_cart, R.string.item_cart)
+    object Profile : BottomNavItem("profile", R.drawable.ic_profile, R.string.item_profile)
 }

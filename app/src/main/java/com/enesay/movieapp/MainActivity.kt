@@ -59,7 +59,7 @@ private fun shouldShowBottomBar(navController: NavController): Boolean {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     return when (currentDestination?.route) {
-        BottomNavItem.Home.route, BottomNavItem.List.route, BottomNavItem.Profile.route -> true
+        BottomNavItem.Home.route, BottomNavItem.Favorites.route, BottomNavItem.Cart.route, BottomNavItem.Profile.route -> true
         else -> false
     }
 }

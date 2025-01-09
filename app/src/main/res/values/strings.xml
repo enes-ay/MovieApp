@@ -19,4 +19,14 @@
     <string name="txt_continue_without_register">Continue without register</string>
     <string name="txt_signUp_with_google">Sign up with Google</string>
     <string name="txt_no_movies">No movie found.</string>
+    <string name="txt_visitor">Visitor</string>">
+    <string name="txt_switch_dark_mode">Switch Dark Mode</string>
+    <string name="txt_change_language">Change Language</string>
+    <string name="txt_cancel">Cancel</string>
+    <string name="txt_logout">Logout</string>
+    <string name="txt_logout_title">Logout</string>
+    <string name="txt_logout_message">Are you sure want to logout?</string>
+    <string name="txt_select_language">Select Language</string>
+    <string name="txt_english">English</string>
+    <string name="txt_turkish">Turkish</string>
 </resources>
