@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">FilmUygulaması</string>
+    <string name="item_movie">Filmler</string>
+    <string name="item_cart">Sepet</string>
+    <string name="item_favorite">Favoriler</string>
+    <string name="item_profile">Profil</string>
+    <string name="txt_add_to_cart">Sepete Ekle</string>
+    <string name="txt_go_to_cart">Sepete Git</string>
+    <string name="txt_total">Toplam</string>
+    <string name="txt_cart">Sepet</string>
+    <string name="txt_confirmCart">Sepeti Onayla</string>
+    <string name="txt_seach">Ara</string>
+    <string name="txt_sort">Sırala</string>
+    <string name="txt_filter">Filtrele</string>
+    <string name="txt_favs">Favoriler</string>
+    <string name="txt_retry">Tekrar Dene</string>
+    <string name="txt_login">Giriş Yap</string>
+    <string name="txt_register">Kayıt Ol</string>
+    <string name="txt_continue_without_register">Kaydolmadan Devam Et</string>
+    <string name="txt_signUp_with_google">Google ile Kaydol</string>
+    <string name="txt_no_movies">Hiç film bulunamadı.</string>
+    <string name="txt_visitor">Ziyaretçi</string>
+    <string name="txt_switch_dark_mode">Karanlık Modu Değiştir</string>
+    <string name="txt_change_language">Dili Değiştir</string>
+    <string name="txt_cancel">İptal</string>
+    <string name="txt_logout">Çıkış Yap</string>
+    <string name="txt_logout_title">Çıkış Yap</string>
+    <string name="txt_logout_message">Çıkış yapmak istediğinizden emin misiniz?</string>
+    <string name="txt_select_language">Dil Seç</string>
+    <string name="txt_english">İngilizce</string>
+    <string name="txt_turkish">Türkçe</string>
+</resources>

@@ -10,7 +10,7 @@
     <string name="txt_cart">Cart</string>
     <string name="txt_confirmCart">Confirm Cart</string>
     <string name="txt_seach">Search</string>
-    <string name="txt_sort">Sort</string>
+    <string name="txt_sort">Sort Movies</string>
     <string name="txt_filter">Filter</string>
     <string name="txt_favs">Favorites</string>
     <string name="txt_retry">Retry</string>

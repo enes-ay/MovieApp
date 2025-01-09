@@ -12,12 +12,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -25,16 +23,23 @@ import com.enesay.movieapp.ui.components.BottomBarNavigation
 import com.enesay.movieapp.ui.navigation.AppNavigation
 import com.enesay.movieapp.ui.theme.MovieAppTheme
 import com.enesay.movieapp.ui.views.BottomNavItem
+import com.enesay.movieapp.utils.DataStoreHelper
+import com.enesay.movieapp.utils.setAppLocale
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val userPreferencesDataStore = DataStoreHelper(context = this)
+
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            MovieAppTheme {
+            val isDarkMode by userPreferencesDataStore.darkModeFlow.collectAsState(initial = false)
+
+            MovieAppTheme (darkTheme = isDarkMode){
                 Scaffold(modifier = Modifier.fillMaxSize(),
                     bottomBar = {
                         val showBottomBar = shouldShowBottomBar(navController = navController)
@@ -49,10 +54,22 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        // Set the app's language based on user preferences
+        lifecycleScope.launch {
+            userPreferencesDataStore.languageFlow.collect { savedLanguage ->
+                if (savedLanguage != null) {
+                    setAppLocale(this@MainActivity, savedLanguage)
+                }
+                else{
+                    setAppLocale(this@MainActivity, "en")
+                }
+            }
+        }
     }
 }
 
-// control of bottom bar visibility
+// Control of bottom bar visibility
 @Composable
 private fun shouldShowBottomBar(navController: NavController): Boolean {
 

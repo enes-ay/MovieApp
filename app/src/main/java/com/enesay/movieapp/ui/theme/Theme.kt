@@ -15,14 +15,17 @@ private val DarkColorScheme = darkColorScheme(
     primary = PrimaryBlack,
     onPrimary = TextPrimaryWhite,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    background = PrimaryGray
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryWhite,
     onPrimary = TextPrimaryBlack,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
+    background = PrimaryWhite
+
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -43,11 +46,6 @@ fun MovieAppTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

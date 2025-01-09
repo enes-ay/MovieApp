@@ -18,14 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
@@ -47,6 +43,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -81,6 +79,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.enesay.movieapp.R
 import com.enesay.movieapp.data.model.Movie
+import com.enesay.movieapp.ui.theme.PrimaryBlack
 import com.enesay.movieapp.ui.views.Favorites.FavoritesViewModel
 import com.enesay.movieapp.utils.Constants
 import com.google.gson.Gson
@@ -112,7 +111,7 @@ fun HomePage(navController: NavController) {
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
             // Top App Bar with Search and Filter Row
-            Column {
+            Column (modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
                 // Top App Bar
                 TopAppBar(
                     title = {
@@ -122,7 +121,7 @@ fun HomePage(navController: NavController) {
                             fontWeight = FontWeight.Bold
                         )
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = PrimaryBlack)
                 )
 
                 // Search Bar
@@ -163,7 +162,7 @@ fun HomePage(navController: NavController) {
                     singleLine = true,
                     shape = RoundedCornerShape(8.dp),
                     colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.background,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                     ),
@@ -171,6 +170,11 @@ fun HomePage(navController: NavController) {
                         .fillMaxWidth()
                         .padding(8.dp)
                         .shadow(4.dp, RoundedCornerShape(8.dp))
+                        .border(
+                            width = 1.dp, // Border width
+                            color = if (isFocused) Color.Blue else Color.Gray, // Border color based on focus
+                            shape = RoundedCornerShape(8.dp) // Matches the TextField's shape
+                        )
                         .onFocusChanged { focusState ->
                             isFocused = focusState.isFocused // Tracks focus state
                         }
@@ -234,6 +238,7 @@ fun HomePage(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
         ) {
             when (moviesState) {
@@ -320,10 +325,12 @@ private fun SortModalBottomSheet(
             onDismissRequest()
         }
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = stringResource(id = R.string.txt_sort),
-                style = MaterialTheme.typography.labelMedium,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             SortOptions.entries.forEach { option ->
@@ -338,6 +345,7 @@ private fun SortModalBottomSheet(
                 ) {
                     RadioButton(
                         selected = sortOption == option,
+                        colors = RadioButtonDefaults.colors(selectedColor = PrimaryBlack),
                         onClick = {
                         }
                     )
