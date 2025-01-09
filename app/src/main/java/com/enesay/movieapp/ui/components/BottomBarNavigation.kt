@@ -24,6 +24,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.enesay.movieapp.ui.theme.PrimaryWhite
 import com.enesay.movieapp.ui.views.BottomNavItem
 
 
@@ -66,14 +67,14 @@ fun BottomBarNavigation(navController: NavHostController) {
                         Icon(
                             painter = painterResource(id = item.iconId),
                             contentDescription = stringResource(id = item.label),
-                            tint = if (isSelected) Color.Blue else Color.Gray
+                            tint = if (isSelected) PrimaryWhite else Color.Gray
                         )
                         Text(
                             text = stringResource(id = item.label),
                             style = MaterialTheme.typography.body2.copy(
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Bold
                             ),
-                            color = if (isSelected) Color.Blue else Color.Gray
+                            color = if (isSelected) PrimaryWhite else Color.Gray
                         )
                     }
                 },

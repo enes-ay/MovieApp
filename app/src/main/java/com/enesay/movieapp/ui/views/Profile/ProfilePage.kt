@@ -87,7 +87,7 @@ fun ProfilePage(navController: NavController) {
         TopAppBar(
             title = { Text(text = "Profile", fontWeight = FontWeight.Bold) },
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary, titleContentColor = Color.White
+                containerColor = PrimaryBlack, titleContentColor = Color.White
             )
         )
     }) { paddingValues ->

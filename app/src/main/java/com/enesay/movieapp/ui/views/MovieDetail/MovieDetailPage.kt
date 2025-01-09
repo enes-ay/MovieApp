@@ -1,6 +1,7 @@
 package com.enesay.movieapp.ui.views.MovieDetail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -31,8 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +55,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.enesay.movieapp.R
 import com.enesay.movieapp.data.model.Movie
+import com.enesay.movieapp.ui.theme.dm_serif
 import com.enesay.movieapp.ui.views.Cart.CartUiState
 import com.enesay.movieapp.utils.Constants.IMAGE_BASE_URL
 import com.skydoves.landscapist.glide.GlideImage
@@ -67,20 +68,20 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
     val totalPrice = count * movie.price
     val movieDetailViewModel: MovieDetailViewModel = hiltViewModel()
 
-    val cartUiState by movieDetailViewModel.cartUiState.collectAsState()
+    //val cartUiState by movieDetailViewModel.cartUiState.collectAsState()
 
-    LaunchedEffect(cartUiState) {
-        if (cartUiState is CartUiState.Success) {
-            navController.navigate("cart"){
-                popUpTo(navController.graph.findStartDestination().id) {
-                   // saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
-            }
-            movieDetailViewModel.resetUiState()
-        }
-    }
+//    LaunchedEffect(cartUiState) {
+//        if (cartUiState is CartUiState.Success) {
+//            navController.navigate("cart") {
+//                popUpTo(navController.graph.findStartDestination().id) {
+//                    // saveState = true
+//                }
+//                launchSingleTop = true
+//                restoreState = true
+//            }
+//            movieDetailViewModel.resetUiState()
+//        }
+//    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -98,7 +99,7 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
         ) {
             // Transient background
             GlideImage(
-                imageModel = "http://kasimadalan.pe.hu/movies/images/${movie.image}",
+                imageModel = "$IMAGE_BASE_URL${movie.image}",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
                 alpha = 0.4f
@@ -120,10 +121,11 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                 // Movie title
                 Text(
                     text = movie.name,
-                    fontSize = 36.sp,
+                    fontSize = 38.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = Color.Black,
                     textAlign = TextAlign.Center,
+                    fontFamily = dm_serif,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
 
@@ -140,41 +142,63 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Movie details
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalAlignment = Alignment.Start
-                ) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(3f)
+                            .padding(horizontal = 16.dp),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = movie.director,
+                            color = Color.White,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${movie.year}",
+                            color = Color.White,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${movie.category}",
+                            color = Color.Red,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "IMDB: ${movie.rating}",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Column(modifier = Modifier.fillMaxWidth()
+                        .weight(1f)
+                        .padding(end = 15.dp),
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.Bottom){
+                        Text(
+                            text = "${movie.price}₺",
+                            color = Color.White,
+                            fontSize = 23.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                Column(modifier = Modifier.fillMaxWidth().padding(16.dp) ) {
                     Text(
-                        text = "Director: ${movie.director}",
-                        color = Color.White,
-                        fontSize = 19.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Year: ${movie.year}",
+                        text = movie.description,
                         color = Color.White,
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Category: ${movie.category}",
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "IMDB: ${movie.rating}/10",
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                        fontWeight = FontWeight.Bold)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Add to cart section
+                // Add to cart button
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -254,25 +278,25 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                                     movie.description,
                                     amount = count
                                 )
-//                                navController.navigate("cart"){
-//                                    popUpTo(navController.graph.findStartDestination().id) {
-//                                        saveState = true
-//                                    }
-//                                    launchSingleTop = true
-//                                    restoreState = true
-//                                }
-
-                                } else {
                                 navController.navigate("cart"){
                                     popUpTo(navController.graph.findStartDestination().id) {
-                                      //  saveState = true
+                                        saveState = false
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+
+                            } else {
+                                navController.navigate("cart") {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        //  saveState = true
                                     }
                                     launchSingleTop = true
                                     restoreState = true
                                 }
                             }
                         },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.border(1.dp, Color.White, CircleShape).weight(1f),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                         shape = RoundedCornerShape(16.dp)
                     ) {
@@ -290,13 +314,6 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
-                    )
-                }
-                if (cartUiState is CartUiState.Error) {
-                    Text(
-                        text = "Error adding to cart",
-                        color = Color.Red,
-                        modifier = Modifier.padding(8.dp)
                     )
                 }
             }

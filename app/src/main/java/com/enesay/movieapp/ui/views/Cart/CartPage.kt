@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
@@ -32,6 +31,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -67,10 +67,20 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun CartPage(navController: NavHostController) {
 
+//    val groupedmovies = cartItems.groupBy { it.name }
+//        .mapValues { entry -> entry.value.sumOf { it.orderAmount } }
+
     val cartViewmodel: CartViewModel = hiltViewModel()
     val cartItems by cartViewmodel.cartItems.observeAsState(initial = listOf())
-    val groupedmovies = cartItems.groupBy { it.name }
-        .mapValues { entry -> entry.value.sumOf { it.orderAmount } }
+    val cartState by cartViewmodel.moviesState
+
+
+    val groupedMovies = cartItems.groupBy { it.name }.mapValues { entry ->
+        mapOf(
+            "amount" to entry.value.sumOf { it.orderAmount },
+            "ids" to entry.value.map { it.cartId }
+        )
+    }
 
     val totalPrice = cartItems.sumOf { it.price * it.orderAmount }
 
@@ -97,87 +107,106 @@ fun CartPage(navController: NavHostController) {
 
         if (cartItems.isNullOrEmpty()) {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "No movie found")
+                Text(
+                    text = stringResource(R.string.txt_no_movies),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 18.sp
+                )
             }
         } else {
-          Column(modifier = Modifier.fillMaxSize()) {
-              LazyColumn(
-                  modifier = Modifier
-                      .fillMaxSize()
-                      .weight(3f)
-                      .padding(paddingValues)
-              ) {
-                  items(groupedmovies.keys.toList()) { movieName ->
-                      val orderAmount = groupedmovies[movieName] ?: 0
-                      val movie = cartItems.first { it.name == movieName }
-                      Log.d("cart page", "movie: ${movie.orderAmount}")
 
-                      CartItem(
-                          movie = movie.copy(orderAmount = orderAmount),
-                          onClick = {
-                              var movieJson = Gson().toJson(movie)
-                              navController.navigate("movieDetail/$movieJson") {
-                                  popUpTo("cart")
-                              }
-                          },
-                          onDelete = {
-                              cartViewmodel.removeFromCart(movie.cartId)
-                          },
-                          onAddToCart = {
-                              cartViewmodel.addToCart(
-                                  movie.name,
-                                  movie.image,
-                                  movie.price,
-                                  movie.category,
-                                  movie.rating,
-                                  movie.year,
-                                  movie.director,
-                                  movie.description,
-                                  amount = 1
-                              )
-                          }
-                      )
-                  }
-                  // Cart Confirm
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(3f)
+                        .padding(paddingValues)
+                ) {
+                    items(groupedMovies.keys.toList(), key = { it }) { movieName ->
+                        val movieInfo = groupedMovies[movieName]
+                        val orderAmount = movieInfo?.get("amount") as? Int ?: 0
+                        val cartIds = movieInfo?.get("ids") as? List<Int> ?: emptyList()
 
-              }
-              Row(
-                  modifier = Modifier
-                      .fillMaxWidth()
-                      .wrapContentHeight()
-                      .weight(1f)
-                      .padding(16.dp)
-                      .padding(bottom = 56.dp),
-                  horizontalArrangement = Arrangement.SpaceBetween,
-                  verticalAlignment = Alignment.CenterVertically
-              ) {
-                  // Confirm Cart Button
-                  Button(
-                      modifier = Modifier
-                          .defaultMinSize(minWidth = 200.dp)
-                          .padding(end = 10.dp),
-                      onClick = { /* Confirm Cart action */ },
-                      shape = RectangleShape,
-                      colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
-                  ) {
-                      Text(
-                          text = stringResource(id = R.string.txt_confirmCart),
-                          color = Color.White,
-                          fontSize = 23.sp,
-                          fontWeight = FontWeight.Bold
-                      )
-                  }
-                  Text(
-                      text = stringResource(id = R.string.txt_total) + " ${totalPrice}₺",
-                      style = MaterialTheme.typography.h5,
-                      modifier = Modifier.align(Alignment.CenterVertically)
-                  )
-              }
-          }
+
+                        val movie = cartItems.first { it.name == movieName }
+
+                        CartItem(
+                            movie = movie.copy(orderAmount = orderAmount, cartId = cartIds.first()),
+                            onClick = {
+                                val movieJson = Gson().toJson(movie)
+                                navController.navigate("movieDetail/$movieJson") {
+                                    popUpTo("cart")
+                                }
+                            },
+                            onDelete = {
+                                Log.d("cart id", "onDelete movie: ${movie.cartId}")
+                                cartViewmodel.removeFromCart(cartIds.first())
+                            },
+                            onAddToCart = {
+                                cartViewmodel.addToCart(
+                                    movie.name,
+                                    movie.image,
+                                    movie.price,
+                                    movie.category,
+                                    movie.rating,
+                                    movie.year,
+                                    movie.director,
+                                    movie.description,
+                                    amount = 1
+                                )
+                            }
+                        )
+                    }
+                    // Cart Confirm
+
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .weight(1f)
+                        .padding(16.dp)
+                        .padding(bottom = 56.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Confirm Cart Button
+                    Button(
+                        modifier = Modifier
+                            .defaultMinSize(minWidth = 200.dp)
+                            .padding(end = 10.dp),
+                        onClick = { /* Confirm Cart action */
+                            navController.navigate("payment")
+                        },
+                        shape = RectangleShape,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.txt_confirmCart),
+                            color = Color.White,
+                            fontSize = 23.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Text(
+                        text = stringResource(id = R.string.txt_total) + " ${totalPrice}₺",
+                        fontSize = 25.sp,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
+            }
 
         }
     }
@@ -197,7 +226,6 @@ fun CartItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp) // Add padding around the card
-            .clickable { onClick() }
             .shadow(8.dp, RoundedCornerShape(16.dp)), // Add shadow and round corners
         shape = RoundedCornerShape(16.dp), // Rounded corners
         // elevation = 8.dp, // Elevation for the card shadow
@@ -205,8 +233,9 @@ fun CartItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.primary)
                 .height(120.dp)
+                .clickable { onClick() }
                 .padding(vertical = 4.dp, horizontal = 10.dp)
         ) {
             Column(
@@ -261,6 +290,7 @@ fun CartItem(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         if (count == 1) {
+                            // Movie remove button
                             IconButton(
                                 modifier = Modifier.size(36.dp), // Set fixed size for the button
                                 onClick = {
@@ -274,6 +304,7 @@ fun CartItem(
                                 )
                             }
                         } else if (count > 0) {
+                            // Movie remove button
                             IconButton(
                                 modifier = Modifier.size(36.dp), // Set fixed size for the button
                                 onClick = {
