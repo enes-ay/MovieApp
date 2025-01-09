@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -77,6 +78,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.enesay.movieapp.R
 import com.enesay.movieapp.data.model.Movie
 import com.enesay.movieapp.ui.views.Favorites.FavoritesViewModel
@@ -90,11 +92,12 @@ fun HomePage(navController: NavController) {
 
     val homeViewModel = hiltViewModel<HomeViewModel>()
     val favoritesViewModel = hiltViewModel<FavoritesViewModel>()
-    val movies by homeViewModel.movies.observeAsState()
+    //val movies by homeViewModel.movies.observeAsState()
+    val moviesState by homeViewModel.moviesState // Yeni state yapısı
     var searchQuery by remember { mutableStateOf("") } // Arama terimini saklar
-    var filteredMovieList = movies?.filter { movie ->
-        movie.name.contains(searchQuery, ignoreCase = true)
-    } ?: listOf() // Arama terimine göre filtreleme
+//    var filteredMovieList = movies?.filter { movie ->
+//        movie.name.contains(searchQuery, ignoreCase = true)
+//    } ?: listOf() // Arama terimine göre filtreleme
     val focusManager = LocalFocusManager.current  // search focus kontrol
     var isFocused by remember { mutableStateOf(false) }
     val sortOption by homeViewModel.sortOption.collectAsState()
@@ -102,8 +105,8 @@ fun HomePage(navController: NavController) {
     val favList by favoritesViewModel.favoriteMovies.observeAsState()
 
     LaunchedEffect(true) {
-        homeViewModel.getMovies()
         favoritesViewModel.getFavoriteMovies("4p9Y5d9wQwQYMWtnZG5l")
+        homeViewModel.getMovies()
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -233,33 +236,61 @@ fun HomePage(navController: NavController) {
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues), // Scaffold'dan gelen padding
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(
-                    bottom = WindowInsets.systemBars.asPaddingValues()
-                        .calculateBottomPadding() + 56.dp // Bottom nav yüksekliğini ekle
-                )
-            ) {
-                if (movies != null) {
-                    items(filteredMovieList) { movie ->
-                        MovieCard(movie = movie,
-                                onClick = {
-                            val movieJson = Gson().toJson(movie)
-                            navController.navigate(
-                                "movieDetail/${movieJson}"
-
-                            )
-                        }, onFavoriteClick = { // Add movie to favorite list
-                                favoritesViewModel.addFavoriteMovie("4p9Y5d9wQwQYMWtnZG5l", it)
-                            },
-                            isFavorite = favList?.any { it.id == movie.id } ?: false
-                            )
+            when (moviesState) {
+                is MoviesUiState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
                     }
                 }
-
+                is MoviesUiState.Success -> {
+                    val filteredMovieList = (moviesState as MoviesUiState.Success).movies.filter { movie ->
+                        movie.name.contains(searchQuery, ignoreCase = true)
+                    }
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(
+                            bottom = WindowInsets.systemBars.asPaddingValues()
+                                .calculateBottomPadding() + 56.dp
+                        )
+                    ) {
+                        items(filteredMovieList) { movie ->
+                            MovieCard(
+                                movie = movie,
+                                onClick = {
+                                    val movieJson = Gson().toJson(movie)
+                                    navController.navigate("movieDetail/${movieJson}"){
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                onFavoriteClick = {
+                                    if (favList?.any { it.id == movie.id } == true) {
+                                        favoritesViewModel.removeFavoriteMovie("4p9Y5d9wQwQYMWtnZG5l", it.id)
+                                    } else {
+                                        favoritesViewModel.addFavoriteMovie("4p9Y5d9wQwQYMWtnZG5l", it)
+                                    }
+                                },
+                                isFavorite = favList?.any { it.id == movie.id } ?: false
+                            )
+                        }
+                    }
+                }
+                is MoviesUiState.Error -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Error: ${(moviesState as MoviesUiState.Error).message}")
+                    }
+                }
+                is MoviesUiState.Empty -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(text = stringResource(id = R.string.txt_no_movies))
+                    }
+                }
             }
             if (isSortBottomSheetVisible) {
                 SortModalBottomSheet(
