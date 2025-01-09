@@ -1,4 +1,4 @@
-package com.enesay.movieapp.ui.auth.Login
+package com.enesay.movieapp.ui.views.Auth.Login
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enesay.movieapp.R
-import com.enesay.movieapp.ui.auth.AuthState
+import com.enesay.movieapp.ui.views.Auth.AuthState
 import com.enesay.movieapp.ui.components.SimpleOutlinedButton
 import com.enesay.movieapp.utils.DataStoreHelper
 import kotlinx.coroutines.launch

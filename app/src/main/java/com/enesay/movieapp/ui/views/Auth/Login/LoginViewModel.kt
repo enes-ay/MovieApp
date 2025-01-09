@@ -1,4 +1,4 @@
-package com.enesay.movieapp.ui.auth.Login
+package com.enesay.movieapp.ui.views.Auth.Login
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.enesay.movieapp.common.Resource
 import com.enesay.movieapp.data.model.User
 import com.enesay.movieapp.data.repository.AuthRepository
-import com.enesay.movieapp.ui.auth.AuthState
+import com.enesay.movieapp.ui.views.Auth.AuthState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

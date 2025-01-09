@@ -67,6 +67,21 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
     val totalPrice = count * movie.price
     val movieDetailViewModel: MovieDetailViewModel = hiltViewModel()
 
+    val cartUiState by movieDetailViewModel.cartUiState.collectAsState()
+
+    LaunchedEffect(cartUiState) {
+        if (cartUiState is CartUiState.Success) {
+            navController.navigate("cart"){
+                popUpTo(navController.graph.findStartDestination().id) {
+                   // saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
+            }
+            movieDetailViewModel.resetUiState()
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -239,18 +254,18 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                                     movie.description,
                                     amount = count
                                 )
-                                navController.navigate("cart"){
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
+//                                navController.navigate("cart"){
+//                                    popUpTo(navController.graph.findStartDestination().id) {
+//                                        saveState = true
+//                                    }
+//                                    launchSingleTop = true
+//                                    restoreState = true
+//                                }
 
                                 } else {
                                 navController.navigate("cart"){
                                     popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                                      //  saveState = true
                                     }
                                     launchSingleTop = true
                                     restoreState = true
@@ -275,6 +290,13 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
+                    )
+                }
+                if (cartUiState is CartUiState.Error) {
+                    Text(
+                        text = "Error adding to cart",
+                        color = Color.Red,
+                        modifier = Modifier.padding(8.dp)
                     )
                 }
             }

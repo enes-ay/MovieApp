@@ -1,4 +1,4 @@
-package com.enesay.movieapp.ui.auth
+package com.enesay.movieapp.ui.views.Auth
 
 sealed class AuthState {
     object Idle : AuthState()

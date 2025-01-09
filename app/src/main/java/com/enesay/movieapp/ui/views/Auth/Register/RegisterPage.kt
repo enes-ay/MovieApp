@@ -1,4 +1,4 @@
-package com.enesay.financialliteracy.ui.presentation.Register
+package com.enesay.movieapp.ui.views.Auth.Register
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,14 +35,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enesay.movieapp.R
-import com.enesay.movieapp.ui.auth.AuthState
+import com.enesay.movieapp.ui.views.Auth.AuthState
 import com.enesay.movieapp.ui.components.CustomTextField
 import com.enesay.movieapp.ui.components.SimpleOutlinedButton
-import com.enesay.movieapp.ui.views.auth.Register.RegisterViewModel
 
 
 @Composable
-fun Register(navController: NavController) {
+fun RegisterPage(navController: NavController) {
 
     val registerViewmodel: RegisterViewModel = hiltViewModel()
     val authState by registerViewmodel.authState
