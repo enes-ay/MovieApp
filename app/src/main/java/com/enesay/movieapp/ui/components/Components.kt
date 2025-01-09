@@ -25,16 +25,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.enesay.movieapp.ui.views.BottomNavItem
 
 
 @Composable
-fun BottomBarNavigation(navController: NavController) {
+fun BottomBarNavigation(navController: NavHostController) {
     val pages = listOf(
         BottomNavItem.Home,
-        BottomNavItem.Profile,
-        BottomNavItem.List
+        BottomNavItem.Favorites,
+        BottomNavItem.Cart
     )
 
     BottomNavigation(

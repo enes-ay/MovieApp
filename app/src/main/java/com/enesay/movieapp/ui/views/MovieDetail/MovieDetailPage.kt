@@ -31,6 +31,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,8 +52,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.enesay.movieapp.R
 import com.enesay.movieapp.data.model.Movie
+import com.enesay.movieapp.ui.views.Cart.CartUiState
 import com.enesay.movieapp.utils.Constants.IMAGE_BASE_URL
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -235,10 +239,21 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                                     movie.description,
                                     amount = count
                                 )
-                                navController.navigate("cart")
-                            } else {
-                                navController.navigate("cart") {
-                                    popUpTo("cart")
+                                navController.navigate("cart"){
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+
+                                } else {
+                                navController.navigate("cart"){
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
                             }
                         },
