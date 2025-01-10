@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,8 +39,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -72,20 +76,24 @@ fun CartPage(navController: NavHostController) {
 
     val cartViewmodel: CartViewModel = hiltViewModel()
     val cartItems by cartViewmodel.cartItems.observeAsState(initial = listOf())
-    val cartState by cartViewmodel.moviesState
+    val cartLoadingState = cartViewmodel.moviesState.value
+    //val cartItems by cartViewmodel.cartItems.observeAsState(initial = listOf())
 
-
-    val groupedMovies = cartItems.groupBy { it.name }.mapValues { entry ->
-        mapOf(
-            "amount" to entry.value.sumOf { it.orderAmount },
-            "ids" to entry.value.map { it.cartId }
-        )
+    val groupedMovies  by  remember {derivedStateOf {
+        cartItems.groupBy { it.name }.mapValues { entry ->
+            mapOf(
+                "amount" to entry.value.sumOf { it.orderAmount },
+                "ids" to entry.value.map { it.cartId }
+            )
+        }
+    }
     }
 
     val totalPrice = cartItems.sumOf { it.price * it.orderAmount }
 
     LaunchedEffect(true) {
-        cartViewmodel.getCartMovies() // current user will be added
+        Log.d("cart page", "LaunchedEffect")
+        cartViewmodel.getCartMovies()
     }
 
     Scaffold(
@@ -105,7 +113,14 @@ fun CartPage(navController: NavHostController) {
         }
     ) { paddingValues ->
 
-        if (cartItems.isNullOrEmpty()) {
+        if(cartLoadingState is CartUiState.Loading){
+            Box(modifier = Modifier.fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+                contentAlignment = Alignment.Center){
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
+            }
+        }
+        else if (cartItems.isEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -119,7 +134,8 @@ fun CartPage(navController: NavHostController) {
                     fontSize = 18.sp
                 )
             }
-        } else {
+        }
+        else {
 
             Column(
                 modifier = Modifier
@@ -132,7 +148,7 @@ fun CartPage(navController: NavHostController) {
                         .weight(3f)
                         .padding(paddingValues)
                 ) {
-                    items(groupedMovies.keys.toList(), key = { it }) { movieName ->
+                    items(groupedMovies.keys.toList(), key = { movieName -> movieName.hashCode() }) { movieName ->
                         val movieInfo = groupedMovies[movieName]
                         val orderAmount = movieInfo?.get("amount") as? Int ?: 0
                         val cartIds = movieInfo?.get("ids") as? List<Int> ?: emptyList()
@@ -220,7 +236,7 @@ fun CartItem(
     onDelete: () -> Unit,
     onAddToCart: () -> Unit,
 ) {
-    var count by remember { mutableStateOf(movie.orderAmount) }
+    var count by remember { mutableIntStateOf(movie.orderAmount) }
     Log.d("cart item", "count: $count")
     Card(
         modifier = Modifier
