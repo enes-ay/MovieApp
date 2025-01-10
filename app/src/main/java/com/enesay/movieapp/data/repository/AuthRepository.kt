@@ -22,11 +22,33 @@ class AuthRepository @Inject constructor(
             // Firebase auth user creation
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             val userId = result.user?.uid.orEmpty()
+            if (userId.isNotEmpty()) {
+                initializeFirestoreData(userId, name, surname, email)
+            }
 
             Resource.Success(userId)
         } catch (e: Exception) {
             Resource.Error(e)
         }
+    }
+
+    private suspend fun initializeFirestoreData(
+        userId: String,
+        name: String,
+        surname: String,
+        email: String
+    ) {
+        val userDocument = mapOf(
+            "name" to name,
+            "surname" to surname,
+            "email" to email,
+            "favorites" to emptyList<Map<String, Any>>()
+        )
+
+        colectionReference
+            .document(userId)
+            .set(userDocument)
+            .await()
     }
 
     suspend fun signIn(email: String, password: String): Resource<String> {
@@ -38,7 +60,7 @@ class AuthRepository @Inject constructor(
         }
     }
 
-    suspend fun signOut(): Resource<String> {
+    fun signOut(): Resource<String> {
         return try {
             firebaseAuth.signOut()
             Resource.Success("User signed out successfully")
@@ -50,25 +72,31 @@ class AuthRepository @Inject constructor(
     suspend fun getUserProfile(userId: String): Resource<User> {
         return try {
             val snapshot =
-                colectionReference.document(userId).collection("Users").document(userId).get()
+                colectionReference.document(userId).get()
                     .await()
             if (snapshot.exists()) {
                 val userProfile = snapshot.toObject(User::class.java)
                 if (userProfile != null) {
+                    Log.d("user", "$userProfile")
+
                     Resource.Success(userProfile)
                 } else {
+                    Log.d("user", "User profile data is null")
                     Resource.Error(Exception("User profile data is null"))
                 }
             } else {
+                Log.d("user", "User profile not found")
                 Resource.Error(Exception("User profile not found"))
             }
         } catch (e: Exception) {
+            Log.e("user", "catch profile: ${e.message}")
             Resource.Error(e)
         }
     }
 
     // Get the user auth value
     fun isUserLoggedIn(): Boolean = try {
+        Log.d("auth", "${firebaseAuth.currentUser}")
         firebaseAuth.currentUser != null
     } catch (e: Exception) {
         Log.e("AuthRepository", "Error checking user login status: ${e.message}")

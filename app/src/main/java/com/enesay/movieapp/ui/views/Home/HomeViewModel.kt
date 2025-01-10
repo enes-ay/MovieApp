@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.enesay.movieapp.data.model.Movie
+import com.enesay.movieapp.data.repository.AuthRepository
 import com.enesay.movieapp.data.repository.FirebaseRepository
 import com.enesay.movieapp.data.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: MovieRepository,
-    private val favoritesRepository: FirebaseRepository
+    private val favoritesRepository: FirebaseRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _moviesState = mutableStateOf<MoviesUiState>(MoviesUiState.Loading)
@@ -26,17 +28,26 @@ class HomeViewModel @Inject constructor(
     private val _sortOption = MutableStateFlow(SortOptions.NAME)
     val sortOption: StateFlow<SortOptions> get() = _sortOption
 
+    val currentUser = authRepository.getCurrentUserId()
+
     init {
         getMovies()
         // todo migrate to firebase auth asap
-        favoritesRepository.getFavoriteMovies("4p9Y5d9wQwQYMWtnZG5l")
+        viewModelScope.launch {
+            if (currentUser != null) {
+                favoritesRepository.getFavoriteMovies(currentUser)
+            }
+        }
     }
 
     fun getMovies() {
         viewModelScope.launch {
             _moviesState.value = MoviesUiState.Loading
-            delay(700) // For simulate real network delay
+            delay(200) // For simulate real network delay
             try {
+                if (currentUser != null) {
+                    favoritesRepository.getFavoriteMovies(currentUser)
+                }
                 val movieList = repository.getAllMovies()
                 if (movieList.isEmpty()) {
                     _moviesState.value = MoviesUiState.Empty
@@ -44,6 +55,7 @@ class HomeViewModel @Inject constructor(
                     val sortedMovies = sortMovies(movieList, _sortOption.value)
                     _moviesState.value = MoviesUiState.Success(sortedMovies)
                 }
+
             } catch (e: Exception) {
                 _moviesState.value = MoviesUiState.Error("Failed to load movies: ${e.message}")
             }
