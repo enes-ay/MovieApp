@@ -85,7 +85,7 @@ fun ProfilePage(navController: NavController) {
 
     Scaffold(topBar = {
         TopAppBar(
-            title = { Text(text = "Profile", fontWeight = FontWeight.Bold) },
+            title = { Text(text = stringResource(R.string.item_profile), fontWeight = FontWeight.Bold) },
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                 containerColor = PrimaryBlack, titleContentColor = Color.White
             )
@@ -216,7 +216,7 @@ fun ProfilePage(navController: NavController) {
                 }
                 item {
                     if (loginViewmodel.currentUser.value != null) {
-                        ProfileItemsRow("Log out", onClick = {
+                        ProfileItemsRow(stringResource(R.string.txt_logout), onClick = {
                             showDialog = true
                         }, color = Color.Red, showIcon = false)
                     }

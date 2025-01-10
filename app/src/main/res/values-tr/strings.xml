@@ -29,4 +29,6 @@
     <string name="txt_select_language">Dil Seç</string>
     <string name="txt_english">İngilizce</string>
     <string name="txt_turkish">Türkçe</string>
+    <string name="txt_login_required_title">Giriş gerekli</string>
+    <string name="txt_login_required_message">Bu özelliği kullanabilmek için giriş yap</string>
 </resources>

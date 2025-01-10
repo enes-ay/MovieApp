@@ -84,7 +84,7 @@ fun RegisterPage(navController: NavController) {
                     },
                     label = "Name",
                     isError = nameError.value != null,
-                    errorMessage = nameError.value
+                    errorMessage = nameError.value,
                 )
 
                 CustomTextField(
@@ -150,7 +150,7 @@ fun RegisterPage(navController: NavController) {
                             },
                         )
 
-                    is AuthState.Loading -> CircularProgressIndicator()
+                    is AuthState.Loading -> CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
 
                     is AuthState.Authenticated -> {
                         navController.navigate("home") {
@@ -188,7 +188,7 @@ fun RegisterPage(navController: NavController) {
                         .wrapContentWidth()
                         .padding(horizontal = 8.dp).padding(top = 20.dp)
                         .height(50.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceAround) {
@@ -200,7 +200,7 @@ fun RegisterPage(navController: NavController) {
                         Spacer(modifier = Modifier.width(30.dp))
                         Text(
                             text = stringResource(R.string.txt_signUp_with_google),
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 17.sp)
                     }
                 }

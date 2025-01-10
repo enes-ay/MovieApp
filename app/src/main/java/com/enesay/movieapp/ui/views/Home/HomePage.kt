@@ -1,5 +1,6 @@
 package com.enesay.movieapp.ui.views.Home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -81,8 +82,10 @@ import com.enesay.movieapp.R
 import com.enesay.movieapp.data.model.Movie
 import com.enesay.movieapp.ui.theme.PrimaryBlack
 import com.enesay.movieapp.ui.theme.PrimaryWhite
+import com.enesay.movieapp.ui.views.Auth.Login.LoginViewModel
 import com.enesay.movieapp.ui.views.Favorites.FavoritesViewModel
 import com.enesay.movieapp.utils.Constants
+import com.enesay.movieapp.utils.ShowLoginWarningDialog
 import com.google.gson.Gson
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -92,9 +95,11 @@ fun HomePage(navController: NavController) {
 
     val homeViewModel = hiltViewModel<HomeViewModel>()
     val favoritesViewModel = hiltViewModel<FavoritesViewModel>()
-    //val movies by homeViewModel.movies.observeAsState()
-    val moviesState by homeViewModel.moviesState // Yeni state yapısı
-    var searchQuery by remember { mutableStateOf("") } // Arama terimini saklar
+    val loginViewModel = hiltViewModel<LoginViewModel>()
+    val isLoggedIn = loginViewModel.userLoggedIn.value
+    val currentUserId = loginViewModel.currentUser.value
+    val moviesState by homeViewModel.moviesState
+    var searchQuery by remember { mutableStateOf("") }
 //    var filteredMovieList = movies?.filter { movie ->
 //        movie.name.contains(searchQuery, ignoreCase = true)
 //    } ?: listOf() // Arama terimine göre filtreleme
@@ -103,10 +108,12 @@ fun HomePage(navController: NavController) {
     val sortOption by homeViewModel.sortOption.collectAsState()
     var isSortBottomSheetVisible by remember { mutableStateOf(false) }
     val favList by favoritesViewModel.favoriteMovies.observeAsState()
+    var showLoginWarningDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(true) {
-        favoritesViewModel.getFavoriteMovies("4p9Y5d9wQwQYMWtnZG5l")
         homeViewModel.getMovies()
+        currentUserId?.let { favoritesViewModel.getFavoriteMovies(it) }
+        Log.d("home", "$currentUserId")
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -181,7 +188,7 @@ fun HomePage(navController: NavController) {
                         }
                 )
 
-                // Filter Row
+                // Filter & Sort Row
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -199,18 +206,24 @@ fun HomePage(navController: NavController) {
                             .weight(1f)
                             .padding(end = 4.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_sort),
-                            contentDescription = "Sort Icon",
-                            tint = PrimaryWhite
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = stringResource(id = R.string.txt_sort),
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = PrimaryWhite
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_sort),
+                                contentDescription = "Sort Icon",
+                                tint = PrimaryWhite
+                            )
+                            // Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = stringResource(id = R.string.txt_sort),
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = PrimaryWhite
+                            )
+                        }
                     }
                     // Filter Button
                     Button(
@@ -223,18 +236,24 @@ fun HomePage(navController: NavController) {
                             .weight(1f)
                             .padding(start = 4.dp)
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_filter),
-                            contentDescription = "Filter Icon",
-                            tint = PrimaryWhite
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = stringResource(id = R.string.txt_filter),
-                            color = PrimaryWhite,
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_filter),
+                                contentDescription = "Filter Icon",
+                                tint = PrimaryWhite
+                            )
+                            // Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = stringResource(id = R.string.txt_filter),
+                                color = PrimaryWhite,
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
                     }
                 }
             }
@@ -246,10 +265,28 @@ fun HomePage(navController: NavController) {
                 .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
         ) {
+            ShowLoginWarningDialog(showDialog = showLoginWarningDialog,
+                onDismiss = {
+                    showLoginWarningDialog = false
+//                    navController.navigate("home") {
+//                        popUpTo("favorites") {
+//                            inclusive = true
+//                        }
+//                    }
+                },
+                onConfirm = {
+                    navController.navigate("login") {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                    }
+                    showLoginWarningDialog = false
+                })
+
             when (moviesState) {
                 is MoviesUiState.Loading -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
 
@@ -282,16 +319,26 @@ fun HomePage(navController: NavController) {
                                     }
                                 },
                                 onFavoriteClick = {
-                                    if (favList?.any { it.id == movie.id } == true) {
-                                        favoritesViewModel.removeFavoriteMovie(
-                                            "4p9Y5d9wQwQYMWtnZG5l",
-                                            it.id
-                                        )
+                                    if (isLoggedIn.not()) {
+                                        showLoginWarningDialog = true
+                                        false
                                     } else {
-                                        favoritesViewModel.addFavoriteMovie(
-                                            "4p9Y5d9wQwQYMWtnZG5l",
-                                            it
-                                        )
+                                        if (favList?.any { it.id == movie.id } == true) {
+                                            if (currentUserId != null) {
+                                                favoritesViewModel.removeFavoriteMovie(
+                                                    currentUserId,
+                                                    it
+                                                )
+                                            }
+                                        } else {
+                                            if (currentUserId != null) {
+                                                favoritesViewModel.addFavoriteMovie(
+                                                    currentUserId,
+                                                    it
+                                                )
+                                            }
+                                        }
+                                        true
                                     }
                                 },
                                 isFavorite = favList?.any { it.id == movie.id } ?: false
@@ -362,7 +409,7 @@ private fun SortModalBottomSheet(
                 ) {
                     RadioButton(
                         selected = sortOption == option,
-                        colors = RadioButtonDefaults.colors(selectedColor = PrimaryBlack),
+                        colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.onPrimary),
                         onClick = {
                         }
                     )
@@ -379,7 +426,7 @@ fun MovieCard(
     movie: Movie,
     initialCount: Int = 0,
     onClick: () -> Unit,
-    onFavoriteClick: (Movie) -> Unit,
+    onFavoriteClick: (Movie) -> Boolean,
     isFavorite: Boolean = false
 ) {
     var count by remember { mutableStateOf(initialCount) }
@@ -410,8 +457,13 @@ fun MovieCard(
             // Top-right corner favorite button
             IconButton(
                 onClick = {
-                    isFavorite = !isFavorite
-                    onFavoriteClick(movie)
+//                    isFavorite = !isFavorite
+//                    onFavoriteClick(movie)
+                    val canToggleFavorite =
+                        onFavoriteClick(movie) // User auth check for adding favorites
+                    if (canToggleFavorite) {
+                        isFavorite = !isFavorite
+                    }
                 },
                 modifier = Modifier
                     .align(Alignment.TopEnd)

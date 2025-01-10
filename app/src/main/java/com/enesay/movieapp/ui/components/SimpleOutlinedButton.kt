@@ -25,8 +25,8 @@ fun SimpleOutlinedButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     shape: RoundedCornerShape = RoundedCornerShape(22.dp),
-    borderColor: Color = MaterialTheme.colorScheme.primary,
-    textColor: Color = MaterialTheme.colorScheme.primary,
+    borderColor: Color = MaterialTheme.colorScheme.onPrimary,
+    textColor: Color = MaterialTheme.colorScheme.onPrimary,
     fontSize: TextUnit = 19.sp,
     fontWeight: FontWeight = FontWeight.Bold,
     height: Dp = 45.dp

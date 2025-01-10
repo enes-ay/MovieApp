@@ -34,6 +34,7 @@ fun CustomTextField(
                 unfocusedBorderColor = Color.Gray,
                 errorBorderColor = Color.Red,
                 errorLabelColor = Color.Red,
+                focusedLabelColor = MaterialTheme.colorScheme.onPrimary
             ),
             modifier = Modifier.fillMaxWidth()
         )

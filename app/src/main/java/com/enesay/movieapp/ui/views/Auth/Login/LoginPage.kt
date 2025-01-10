@@ -3,6 +3,7 @@ package com.enesay.movieapp.ui.views.Auth.Login
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -82,7 +83,7 @@ fun LoginPage(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(MaterialTheme.colorScheme.background),
+                .background(MaterialTheme.colorScheme.primary),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -101,11 +102,12 @@ fun LoginPage(navController: NavController) {
                         text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.displaySmall,
                         fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
 
                     // E-mail field
-                    OutlinedTextField(value = emailState.value,
+                    OutlinedTextField(
+                        value = emailState.value,
                         onValueChange = {
                             emailState.value = it
                             emailError.value = null
@@ -118,6 +120,7 @@ fun LoginPage(navController: NavController) {
                             unfocusedBorderColor = Color.Gray,
                             errorBorderColor = Color.Red,
                             errorLabelColor = Color.Red,
+                            focusedLabelColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -125,7 +128,8 @@ fun LoginPage(navController: NavController) {
                         Text(text = emailError.value!!, color = Color.Red, fontSize = 12.sp)
                     }
                     // Password Field
-                    OutlinedTextField(value = passwordState.value,
+                    OutlinedTextField(
+                        value = passwordState.value,
                         onValueChange = {
                             passwordState.value = it
                             passwordError.value = null
@@ -138,12 +142,14 @@ fun LoginPage(navController: NavController) {
                             unfocusedBorderColor = Color.Gray,
                             errorBorderColor = Color.Red,
                             errorLabelColor = Color.Red,
+                            focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
                         ),
                         modifier = Modifier.fillMaxWidth()
                     )
                     if (passwordError.value != null) {
                         Text(text = passwordError.value!!, color = Color.Red, fontSize = 12.sp)
                     }
+                    // Remember me checkbox
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -156,7 +162,7 @@ fun LoginPage(navController: NavController) {
                         Text(
                             "Remember me",
                             fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
 
@@ -209,12 +215,12 @@ fun LoginPage(navController: NavController) {
                                         passwordError.value = "Password cannot be empty"
                                     }
                                     if (emailError.value == null && passwordError.value == null) {
-                                       // loginViewmodel.signIn(emailState.value, passwordState.value)
+                                         loginViewmodel.signIn(emailState.value, passwordState.value)
                                     }
                                 },
                             )
 
-                        is AuthState.Loading -> CircularProgressIndicator()
+                        is AuthState.Loading -> CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
 
                         is AuthState.Authenticated -> {
                             LaunchedEffect(AuthState.Authenticated) {
@@ -226,13 +232,11 @@ fun LoginPage(navController: NavController) {
                                             passwordState.value
                                         )
                                     }
-//                                        Log.d("login", loginViewmodel.currentUser.value.toString())
-//                                        loginViewmodel.currentUser.value?.let {
-//                                            Log.d("homel", it )
-//                                            userPreferencesDataStore.saveUserId(
-//                                                it
-//                                            )
-//                                        }
+                                        loginViewmodel.currentUser.value?.let {
+                                            userPreferencesDataStore.saveUserId(
+                                                it
+                                            )
+                                        }
                                 }
                             }
 
@@ -269,7 +273,7 @@ fun LoginPage(navController: NavController) {
                         Text(
                             text = "Don't have an account? ",
                             fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Medium
                         )
@@ -277,13 +281,13 @@ fun LoginPage(navController: NavController) {
                             text = " Create here!",
                             modifier = Modifier.clickable { navController.navigate("register") },
                             fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.Medium
                         )
 
                     }
-
+                    // Continue without register button
                     TextButton(
                         onClick = {
                             navController.navigate("home")
@@ -294,21 +298,24 @@ fun LoginPage(navController: NavController) {
                             MaterialTheme.colorScheme.primary
                         ), // Customize border
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
                             disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(
                                 alpha = 0.4f
-                            )
+                            ),
                         ),
                         modifier = Modifier
                             .padding(8.dp)
                             .padding(top = 20.dp)
-                            .wrapContentSize()// Fixed height for consistency
+                            .wrapContentSize()
+                            .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(22.dp))
+                            // Fixed height for consistency
                     ) {
                         Text(
                             modifier = Modifier.padding(5.dp),
                             text = stringResource(R.string.txt_continue_without_register),
                             fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
