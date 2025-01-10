@@ -118,16 +118,37 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Movie title
-                Text(
-                    text = movie.name,
-                    fontSize = 38.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    fontFamily = dm_serif,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Movie title
+                    Text(
+                        text = movie.name,
+                        fontSize = 38.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        fontFamily = dm_serif
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = Color(0xFFf5c518),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(horizontal = 6.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "IMDb ${movie.rating}",
+                            color = Color.Black,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    }
+                }
 
                 // Movie poster
                 GlideImage(
@@ -168,18 +189,22 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
                         )
-                        Text(
-                            text = "IMDB: ${movie.rating}",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+//                        Text(
+//                            text = "IMDB: ${movie.rating}",
+//                            color = Color.White,
+//                            fontSize = 18.sp,
+//                            fontWeight = FontWeight.Bold
+//                        )
+
                     }
-                    Column(modifier = Modifier.fillMaxWidth()
-                        .weight(1f)
-                        .padding(end = 15.dp),
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .padding(end = 15.dp),
                         horizontalAlignment = Alignment.End,
-                        verticalArrangement = Arrangement.Bottom){
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
                         Text(
                             text = "${movie.price}₺",
                             color = Color.White,
@@ -188,12 +213,15 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                         )
                     }
                 }
-                Column(modifier = Modifier.fillMaxWidth().padding(16.dp) ) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)) {
                     Text(
                         text = movie.description,
                         color = Color.White,
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold)
+                        fontWeight = FontWeight.Bold
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -278,7 +306,7 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                                     movie.description,
                                     amount = count
                                 )
-                                navController.navigate("cart"){
+                                navController.navigate("cart") {
                                     popUpTo(navController.graph.findStartDestination().id) {
                                         saveState = false
                                     }
@@ -296,7 +324,9 @@ fun MovieDetailPage(navController: NavController, movie: Movie) {
                                 }
                             }
                         },
-                        modifier = Modifier.border(1.dp, Color.White, CircleShape).weight(1f),
+                        modifier = Modifier
+                            .border(1.dp, Color.White, CircleShape)
+                            .weight(1f),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                         shape = RoundedCornerShape(16.dp)
                     ) {
