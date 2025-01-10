@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -24,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,19 +34,31 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enesay.movieapp.R
+import com.enesay.movieapp.ui.views.Auth.Login.LoginViewModel
 import com.enesay.movieapp.ui.views.Home.MovieCard
+import com.enesay.movieapp.utils.ShowLoginWarningDialog
 import com.google.gson.Gson
+import kotlin.math.log
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesPage(navController: NavController) {
     val favoritesViewModel = hiltViewModel<FavoritesViewModel>()
+    val loginViewModel = hiltViewModel<LoginViewModel>()
     val favoriteMovies by favoritesViewModel.favoriteMovies.observeAsState()
     val isFavorite by remember { mutableStateOf(true) }
+    var showLoginWarningDialog by remember { mutableStateOf(false) }
+    val isLoggedIn = loginViewModel.userLoggedIn.value
+    val currentUserId = loginViewModel.currentUser.value
 
     LaunchedEffect(true) {
-        favoritesViewModel.getFavoriteMovies("4p9Y5d9wQwQYMWtnZG5l") // todo get the user id from authenticated user
+        if (isLoggedIn.not()) {
+            Log.d("favorites", "kullanıcı $isLoggedIn")
+            showLoginWarningDialog = true
+        } else {
+            currentUserId?.let { favoritesViewModel.getFavoriteMovies(it) }
+        }
         Log.d("favorites", "fav compose $favoriteMovies")
     }
 
@@ -67,6 +79,24 @@ fun FavoritesPage(navController: NavController) {
 
     ) { paddingValues ->
         if (favoriteMovies.isNullOrEmpty()) {
+            ShowLoginWarningDialog(showDialog = showLoginWarningDialog,
+                onDismiss = {
+                    showLoginWarningDialog = false
+                    navController.navigate("home") {
+                        popUpTo("favorites") {
+                            inclusive = true
+                        }
+                    }
+                },
+                onConfirm = {
+                    navController.navigate("login") {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                    }
+                    showLoginWarningDialog = false
+                })
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -81,6 +111,24 @@ fun FavoritesPage(navController: NavController) {
                 )
             }
         } else {
+
+            ShowLoginWarningDialog(showDialog = showLoginWarningDialog,
+                onDismiss = {
+                    showLoginWarningDialog = false
+                    navController.navigate("home") {
+                        popUpTo("favorites") {
+                            inclusive = true
+                        }
+                    }
+                },
+                onConfirm = {
+                    navController.navigate("login") {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                    }
+                    showLoginWarningDialog = false
+                })
 
             LazyColumn(
                 modifier = Modifier
@@ -97,11 +145,15 @@ fun FavoritesPage(navController: NavController) {
                         Log.d("movies", "${movies} ")
                         MovieCard(movie = movie,
                             onFavoriteClick = {
-                                favoritesViewModel.removeFavoriteMovie(
-                                    userId = "4p9Y5d9wQwQYMWtnZG5l",
-                                    it.id
-                                )
-                                Log.d("fav", it.id.toString())
+                                if (currentUserId != null) {
+                                    Log.d("fav", "user id null değil $currentUserId")
+                                    favoritesViewModel.removeFavoriteMovie(
+                                        userId = currentUserId,
+                                        it
+                                    )
+                                    Log.d("movie", it.toString())
+                                }
+                                true
                             }, onClick = {
                                 val movieJson = Gson().toJson(movie)
                                 navController.navigate("movieDetail/${movieJson}")

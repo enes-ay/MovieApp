@@ -4,48 +4,55 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.enesay.movieapp.data.model.Movie
+import com.enesay.movieapp.data.repository.AuthRepository
 import com.enesay.movieapp.data.repository.FirebaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FavoritesViewModel @Inject constructor(val repository: FirebaseRepository) : ViewModel() {
+class FavoritesViewModel @Inject constructor(val repository: FirebaseRepository,
+                                             val authRepository: AuthRepository
+) : ViewModel() {
     private val _favorites = MutableLiveData<List<Movie>>()
     val favoriteMovies: LiveData<List<Movie>> = _favorites
+    val currentUser = authRepository.getCurrentUserId()
 
     init {
-      getFavoriteMovies("4p9Y5d9wQwQYMWtnZG5l")
+        if (currentUser != null) {
+            getFavoriteMovies(currentUser)
+        }
     }
 
     fun addFavoriteMovie(userId: String, movie: Movie) {
-        repository.addFavoriteMovie(userId, movie)
-            .addOnSuccessListener {
-                _favorites.value = repository.getFavoriteMovies(userId).value
-                // Handle success (e.g., show a Toast)
-            }
-            .addOnFailureListener {
-                // Handle failure (e.g., show an error message)
-            }
+        viewModelScope.launch {
+            repository.addFavoriteMovie(userId, movie)
+        }
+        getFavoriteMovies(userId)
     }
 
-    fun removeFavoriteMovie(userId: String, movieId: Int) {
-        repository.removeFavoriteMovie(userId, movieId)
-            .addOnSuccessListener {
-                // Handle success
-                _favorites.value = repository.getFavoriteMovies(userId).value
-                Log.d("favorites", "remove fav vm success")
+    fun removeFavoriteMovie(userId: String, movie: Movie) {
+        viewModelScope.launch {
+            val result = repository.removeFavoriteMovie(userId, movie)
+            result.onSuccess {
+                // Successfully removed the movie from favorites
+                Log.d("favorites", "Remove favorite success")
 
-            }
-            .addOnFailureListener {
+                // Optionally, refresh the favorites list
+                getFavoriteMovies(userId)
+            }.onFailure { exception ->
                 // Handle failure
-                Log.d("favorites", "remove fav vm error")
-
+                Log.e("favorites", "Remove favorite error: ${exception.message}")
             }
+        }
     }
 
     fun getFavoriteMovies(userId: String) {
-        _favorites.value = repository.getFavoriteMovies(userId).value
+        viewModelScope.launch {
+            _favorites.value = repository.getFavoriteMovies(userId).value
+        }
         Log.d("favorites", "get fav vm ${_favorites.value}")
     }
 }
