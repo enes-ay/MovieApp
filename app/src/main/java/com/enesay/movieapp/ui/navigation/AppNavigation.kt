@@ -20,10 +20,10 @@ import com.google.gson.Gson
 @Composable
 fun AppNavigation(navController: NavHostController, paddingValues: PaddingValues){
 
-        NavHost(navController = navController, startDestination = "home") {
+        NavHost(navController = navController, startDestination = "splash") {
 
             composable("splash") {
-                SplashPage(navController = navController, paddingValues)
+                SplashPage(navController = navController)
             }
             composable("home") {
                 HomePage(navController = navController)
