@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FilmUygulaması</string>
+    <string name="app_name">Film Uygulaması</string>
     <string name="item_movie">Filmler</string>
     <string name="item_cart">Sepet</string>
     <string name="item_favorite">Favoriler</string>

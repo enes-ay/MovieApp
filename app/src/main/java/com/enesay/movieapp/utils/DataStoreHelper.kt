@@ -73,7 +73,7 @@ class DataStoreHelper(private val context: Context) {
     }
     suspend fun clearUserId() {
         context.dataStore.edit { preferences ->
-            preferences.remove(USER_ID) // USER_ID anahtarını kaldır
+            preferences.remove(USER_ID)
         }
     }
 
