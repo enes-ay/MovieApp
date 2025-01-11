@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.enesay.movieapp.common.Resource
 import com.enesay.movieapp.data.repository.AuthRepository
 import com.enesay.movieapp.ui.views.Auth.AuthState
+import com.enesay.movieapp.utils.ValidationUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,5 +32,21 @@ class RegisterViewModel @Inject constructor(private val authRepository: AuthRepo
                 is Resource.Error -> AuthState.Error(result.exception.message ?: "Unknown error")
             }
         }
+    }
+
+    fun validateInputs(
+        name: String,
+        surname: String,
+        email: String,
+        password: String
+    ): Map<String, String?> {
+        val errors = mutableMapOf<String, String?>()
+
+        errors["name"] = ValidationUtils.validateName(name)
+        errors["surname"] = ValidationUtils.validateSurname(surname)
+        errors["email"] = ValidationUtils.validateEmail(email)
+        errors["password"] = ValidationUtils.validatePassword(password)
+
+        return errors
     }
 }

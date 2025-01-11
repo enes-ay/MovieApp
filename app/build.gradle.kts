@@ -56,14 +56,17 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.ui.test.android)
     implementation(libs.firebase.auth.ktx)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
+    implementation(libs.androidx.junit.ktx)
+    androidTestImplementation(libs.junit.junit)
+    // testImplementation(libs.junit)
+    // androidTestImplementation(libs.androidx.junit)
+    // androidTestImplementation(libs.androidx.espresso.core)
+    // androidTestImplementation(platform(libs.androidx.compose.bom))
+    // androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    testImplementation("androidx.compose.ui:ui-test-junit4:1.6.8")
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.6")
     // Gson

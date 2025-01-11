@@ -44,9 +44,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enesay.movieapp.R
+import com.enesay.movieapp.ui.components.CustomTextField
 import com.enesay.movieapp.ui.views.Auth.AuthState
 import com.enesay.movieapp.ui.components.SimpleOutlinedButton
 import com.enesay.movieapp.utils.DataStoreHelper
+import com.enesay.movieapp.utils.ValidationUtils
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,12 +61,10 @@ fun LoginPage(navController: NavController) {
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { paddingValues ->
-        // Collect DataStore values
         val rememberMe = userPreferencesDataStore.rememberMeFlow.collectAsState(initial = false)
         val email = userPreferencesDataStore.emailFlow.collectAsState(initial = "")
         val password = userPreferencesDataStore.passwordFlow.collectAsState(initial = "")
-
-        // States for input fields
+        // Input value's states
         val emailState = rememberSaveable { mutableStateOf(email.value ?: "") }
         val passwordState = rememberSaveable { mutableStateOf(password.value ?: "") }
         val rememberMeState = rememberSaveable { mutableStateOf(rememberMe.value) }
@@ -74,7 +74,6 @@ fun LoginPage(navController: NavController) {
         val scope = rememberCoroutineScope()
 
         LaunchedEffect(key1 = rememberMe.value, key2 = email.value, key3 = password.value) {
-            Log.e("launch", "triggered")
             emailState.value = email.value ?: ""
             passwordState.value = password.value ?: ""
             rememberMeState.value = rememberMe.value
@@ -106,49 +105,29 @@ fun LoginPage(navController: NavController) {
                     )
 
                     // E-mail field
-                    OutlinedTextField(
+                    CustomTextField(
                         value = emailState.value,
                         onValueChange = {
                             emailState.value = it
                             emailError.value = null
                         },
-                        label = { Text("Email") },
+                        label = "Email",
                         isError = emailError.value != null,
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            focusedBorderColor = Color.Gray,
-                            unfocusedBorderColor = Color.Gray,
-                            errorBorderColor = Color.Red,
-                            errorLabelColor = Color.Red,
-                            focusedLabelColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        errorMessage = emailError.value
                     )
-                    if (emailError.value != null) {
-                        Text(text = emailError.value!!, color = Color.Red, fontSize = 12.sp)
-                    }
                     // Password Field
-                    OutlinedTextField(
+                    CustomTextField(
                         value = passwordState.value,
                         onValueChange = {
                             passwordState.value = it
                             passwordError.value = null
                         },
-                        label = { Text("Password") },
+                        label = "Password",
                         isError = passwordError.value != null,
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            focusedBorderColor = Color.Gray,
-                            unfocusedBorderColor = Color.Gray,
-                            errorBorderColor = Color.Red,
-                            errorLabelColor = Color.Red,
-                            focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                        ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        errorMessage = passwordError.value
                     )
-                    if (passwordError.value != null) {
-                        Text(text = passwordError.value!!, color = Color.Red, fontSize = 12.sp)
-                    }
                     // Remember me checkbox
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -168,54 +147,16 @@ fun LoginPage(navController: NavController) {
 
                     when (authState) {
                         is AuthState.Idle ->
-
-//                            OutlinedButton(
-//                                onClick = {
-//                                    if (emailState.value.isBlank()) {
-//                                        emailError.value = "Email cannot be empty"
-//                                    }
-//                                    if (passwordState.value.isBlank()) {
-//                                        passwordError.value = "Password cannot be empty"
-//                                    }
-//                                    if (emailError.value == null && passwordError.value == null) {
-//                                        loginViewmodel.signIn(emailState.value, passwordState.value)
-//                                    }
-//                                },
-//                                shape = RoundedCornerShape(22.dp), // Modern rounded corners
-//                                border = BorderStroke(
-//                                    1.2.dp,
-//                                    MaterialTheme.colorScheme.primary
-//                                ), // Customize border
-//                                colors = ButtonDefaults.outlinedButtonColors(
-//                                    contentColor = MaterialTheme.colorScheme.onPrimary,
-//                                    disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(
-//                                        alpha = 0.4f
-//                                    )
-//                                ),
-//                                modifier = Modifier
-//                                    .padding(8.dp)
-//                                    .width(250.dp)
-//                                    .height(45.dp) // Fixed height for consistency
-//                            ) {
-//                                Text(
-//                                    "Sign in",
-//                                    fontSize = 19.sp,
-//                                    fontWeight = FontWeight.Bold,
-//                                    color = MaterialTheme.colorScheme.primary
-//                                )
-//                            }
-
                             SimpleOutlinedButton(
                                 text = stringResource(R.string.txt_login),
                                 onClick = {
-                                    if (emailState.value.isBlank()) {
-                                        emailError.value = "Email cannot be empty"
-                                    }
+                                    emailError.value = ValidationUtils.validateEmail(emailState.value)
+
                                     if (passwordState.value.isBlank()) {
                                         passwordError.value = "Password cannot be empty"
                                     }
                                     if (emailError.value == null && passwordError.value == null) {
-                                         loginViewmodel.signIn(emailState.value, passwordState.value)
+                                        loginViewmodel.signIn(emailState.value, passwordState.value)
                                     }
                                 },
                             )
@@ -232,11 +173,11 @@ fun LoginPage(navController: NavController) {
                                             passwordState.value
                                         )
                                     }
-                                        loginViewmodel.currentUser.value?.let {
-                                            userPreferencesDataStore.saveUserId(
-                                                it
-                                            )
-                                        }
+                                    loginViewmodel.currentUser.value?.let {
+                                        userPreferencesDataStore.saveUserId(
+                                            it
+                                        )
+                                    }
                                 }
                             }
 
@@ -254,9 +195,9 @@ fun LoginPage(navController: NavController) {
                             SimpleOutlinedButton(
                                 text = stringResource(R.string.txt_retry),
                                 onClick = {
-//                                    loginViewmodel.signIn(
-//                                        emailState.value, passwordState.value
-//                                    )
+                                    loginViewmodel.signIn(
+                                        emailState.value, passwordState.value
+                                    )
                                 },
                                 borderColor = MaterialTheme.colorScheme.error,
                                 textColor = MaterialTheme.colorScheme.error
@@ -307,8 +248,12 @@ fun LoginPage(navController: NavController) {
                             .padding(8.dp)
                             .padding(top = 20.dp)
                             .wrapContentSize()
-                            .border(1.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(22.dp))
-                            // Fixed height for consistency
+                            .border(
+                                1.dp,
+                                MaterialTheme.colorScheme.onPrimary,
+                                RoundedCornerShape(22.dp)
+                            )
+                        // Fixed height for consistency
                     ) {
                         Text(
                             modifier = Modifier.padding(5.dp),

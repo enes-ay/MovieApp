@@ -2,6 +2,7 @@ package com.enesay.movieapp.ui.views.Auth.Register
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,6 +60,7 @@ fun RegisterPage(navController: NavController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primary)
                 .padding(paddingValues)
                 .padding(horizontal = 20.dp),
             contentAlignment = Alignment.Center
@@ -71,10 +73,10 @@ fun RegisterPage(navController: NavController) {
                     modifier = Modifier
                         .wrapContentSize()
                         .padding(bottom = 30.dp),
-                    text = "Sign up",
+                    text = stringResource(R.string.txt_register),
                     style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
                 CustomTextField(
                     value = name.value,
@@ -127,18 +129,12 @@ fun RegisterPage(navController: NavController) {
                         SimpleOutlinedButton(
                             text = stringResource(R.string.txt_register),
                             onClick = {
-                                if (email.value.isBlank()) {
-                                    emailError.value = "Email cannot be empty"
-                                }
-                                if (password.value.isBlank()) {
-                                    passwordError.value = "Password cannot be empty"
-                                }
-                                if (surname.value.isBlank()) {
-                                    surnameError.value = "Surname cannot be empty"
-                                }
-                                if (name.value.isBlank()) {
-                                    nameError.value = "Name cannot be empty"
-                                }
+                                val errors = registerViewmodel.validateInputs(name.value, surname.value, email.value, password.value)
+                                nameError.value = errors["name"]
+                                surnameError.value = errors["surname"]
+                                emailError.value = errors["email"]
+                                passwordError.value = errors["password"]
+
                                 if (emailError.value == null && passwordError.value == null) {
                                     registerViewmodel.signUp(
                                         email.value,
@@ -193,7 +189,7 @@ fun RegisterPage(navController: NavController) {
                     Row(verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceAround) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_google),
+                            painter = painterResource(id = R.drawable.ic_google_logo),
                             contentDescription = "Google Logo",
                             modifier = Modifier.size(24.dp)
                         )
