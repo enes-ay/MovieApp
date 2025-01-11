@@ -17,7 +17,7 @@
     <string name="txt_login">Giriş Yap</string>
     <string name="txt_register">Kayıt Ol</string>
     <string name="txt_continue_without_register">Kaydolmadan Devam Et</string>
-    <string name="txt_signUp_with_google">Google ile Kaydol</string>
+    <string name="txt_signUp_with_google">Google ile giriş yap</string>
     <string name="txt_no_movies">Hiç film bulunamadı.</string>
     <string name="txt_visitor">Ziyaretçi</string>
     <string name="txt_switch_dark_mode">Karanlık Modu Değiştir</string>

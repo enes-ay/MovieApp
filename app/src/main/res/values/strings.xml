@@ -17,7 +17,7 @@
     <string name="txt_login">Login</string>
     <string name="txt_register">Register</string>
     <string name="txt_continue_without_register">Continue without register</string>
-    <string name="txt_signUp_with_google">Sign up with Google</string>
+    <string name="txt_signUp_with_google">Sign in with Google</string>
     <string name="txt_no_movies">No movie found.</string>
     <string name="txt_visitor">Visitor</string>">
     <string name="txt_switch_dark_mode">Switch Dark Mode</string>

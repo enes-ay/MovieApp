@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.ui.test.android)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.googleid)
     androidTestImplementation(libs.junit.junit)
     // testImplementation(libs.junit)
     // androidTestImplementation(libs.androidx.junit)
@@ -97,4 +98,7 @@ dependencies {
 
     // Lottie
     implementation("com.airbnb.android:lottie-compose:4.0.0")
+
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+
 }

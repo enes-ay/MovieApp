@@ -1,16 +1,23 @@
 package com.enesay.movieapp.data.repository
 
 import android.util.Log
+import androidx.credentials.Credential
+import androidx.credentials.CustomCredential
 import com.enesay.movieapp.common.Resource
 import com.enesay.movieapp.data.model.User
+import com.enesay.movieapp.service.GoogleAccountService
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AuthRepository @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-    private val colectionReference: CollectionReference
+    private val colectionReference: CollectionReference,
+    private val accountService: GoogleAccountService
 ) {
     suspend fun signUp(
         email: String,
@@ -109,5 +116,24 @@ class AuthRepository @Inject constructor(
     } catch (e: Exception) {
         Log.e("AuthRepository", "Error getting current user ID: ${e.message}")
         null
+    }
+
+    suspend fun signInWithGoogle(credential: Credential) : Resource<String> {
+       return  try {
+            if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                accountService.signInWithGoogle(googleIdTokenCredential.idToken)
+                delay(1000)
+                firebaseAuth.currentUser?.uid?.let { initializeFirestoreData(it, googleIdTokenCredential.displayName ?: "unknown", googleIdTokenCredential.familyName ?: "unknown", googleIdTokenCredential.id) }
+                Log.d("credential", "${googleIdTokenCredential} ${googleIdTokenCredential.id} ${googleIdTokenCredential.displayName}")
+                //initializeFirestoreData(googleIdTokenCredential.id, googleIdTokenCredential.displayName ?: "unknown", googleIdTokenCredential.familyName ?: "unknown", googleIdTokenCredential.idToken)
+                Resource.Success(googleIdTokenCredential.idToken)
+            } else {
+                Resource.Error(Exception("Invalid credential type"))
+            }
+        } catch (e: Exception) {
+            Log.e("credential", e.message.toString())
+            Resource.Error(e)
+        }
     }
 }

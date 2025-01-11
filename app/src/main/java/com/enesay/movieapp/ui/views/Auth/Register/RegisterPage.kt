@@ -38,6 +38,7 @@ import androidx.navigation.NavController
 import com.enesay.movieapp.R
 import com.enesay.movieapp.ui.views.Auth.AuthState
 import com.enesay.movieapp.ui.components.CustomTextField
+import com.enesay.movieapp.ui.components.GoogleLoginButton
 import com.enesay.movieapp.ui.components.SimpleOutlinedButton
 
 
@@ -175,31 +176,12 @@ fun RegisterPage(navController: NavController) {
                     }
                 }
                 // Google login button
-                Button(
-                    onClick = {  },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent
-                    ),
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .padding(horizontal = 8.dp).padding(top = 20.dp)
-                        .height(50.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onPrimary)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_google_logo),
-                            contentDescription = "Google Logo",
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(30.dp))
-                        Text(
-                            text = stringResource(R.string.txt_signUp_with_google),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontSize = 17.sp)
+
+                GoogleLoginButton(
+                    onGetCredentialResponse = { credential ->
+                        registerViewmodel.signInWithGoogle(credential)
                     }
-                }
+                )
             }
         }
     }

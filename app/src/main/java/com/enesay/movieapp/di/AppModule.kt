@@ -4,6 +4,7 @@ import com.enesay.movieapp.data.datasource.MovieDataSource
 import com.enesay.movieapp.data.repository.AuthRepository
 import com.enesay.movieapp.data.repository.MovieRepository
 import com.enesay.movieapp.service.ApiUtils
+import com.enesay.movieapp.service.GoogleAccountService
 import com.enesay.movieapp.service.MovieService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
@@ -39,8 +40,9 @@ object AppModule {
     @Singleton
     fun provideAuthRepository(
         firebaseAuth: FirebaseAuth,
-        collectionReference: CollectionReference
+        collectionReference: CollectionReference,
+        accountService: GoogleAccountService
     ): AuthRepository {
-        return AuthRepository(firebaseAuth, collectionReference)
+        return AuthRepository(firebaseAuth, collectionReference, accountService)
     }
 }
