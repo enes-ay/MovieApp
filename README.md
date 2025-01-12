@@ -12,6 +12,8 @@ Movie purchasing app.
   <img src="/Screenshots/profile.png" alt="Trade crypto Page" width="200"/>
   <img src="/Screenshots/fav_visitor.png" alt="Trade sell Page" width="200"/>
   <img src="/Screenshots/fav.png" alt="Trade success dialog" width="200"/>
+  <img src="/Screenshots/payment.png" alt="Trade success dialog" width="200"/>
+  <img src="/Screenshots/payment_light.png" alt="Trade success dialog" width="200"/>
   <img src="/Screenshots/login.png" alt="Log out dialog" width="200"/>
   <img src="/Screenshots/register.png" alt="Login required dialog" width="200"/>
   <img src="/Screenshots/home_search.png" alt="Sign in page" width="200"/>
