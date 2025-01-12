@@ -34,4 +34,5 @@
     <string name="txt_your_items"> Filmleriniz</string>
     <string name="txt_saved_cards">Kayıtlı Kartlar</string>
     <string name="txt_confirm_payment">Ödemeyi Onayla</string>
+    <string name="txt_my_orders">Siparişlerim</string>
 </resources>

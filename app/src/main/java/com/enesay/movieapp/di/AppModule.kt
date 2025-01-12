@@ -6,6 +6,7 @@ import com.enesay.movieapp.data.repository.MovieRepository
 import com.enesay.movieapp.service.ApiUtils
 import com.enesay.movieapp.service.GoogleAccountService
 import com.enesay.movieapp.service.MovieService
+import com.enesay.movieapp.ui.views.Cart.CartViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import dagger.Module
@@ -44,5 +45,11 @@ object AppModule {
         accountService: GoogleAccountService
     ): AuthRepository {
         return AuthRepository(firebaseAuth, collectionReference, accountService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartViewModel(movieRepository: MovieRepository): CartViewModel {
+        return CartViewModel(movieRepository = movieRepository)
     }
 }

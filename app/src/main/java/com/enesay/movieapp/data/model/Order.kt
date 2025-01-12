@@ -1,7 +1,8 @@
 package com.enesay.movieapp.data.model
 
 data class Order(
-    var orderId : String = "",
+    val orderId: String = "",
     val orderDate: String = "",
-    val orderContents: List<Movie> = listOf()
+    val orderContents: List<MovieCart> = listOf(),
+    val totalPrice: Int = 0
 )

@@ -34,4 +34,5 @@
     <string name="txt_your_items">Your Items</string>
     <string name="txt_saved_cards">Saved Cards</string>
     <string name="txt_confirm_payment">Confirm Payment</string>
+    <string name="txt_my_orders">My Orders</string>
 </resources>
