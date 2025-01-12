@@ -31,4 +31,7 @@
     <string name="txt_turkish">Turkish</string>
     <string name="txt_login_required_title">Login Required</string>
     <string name="txt_login_required_message">You need to login to access this feature.</string>
+    <string name="txt_your_items">Your Items</string>
+    <string name="txt_saved_cards">Saved Cards</string>
+    <string name="txt_confirm_payment">Confirm Payment</string>
 </resources>

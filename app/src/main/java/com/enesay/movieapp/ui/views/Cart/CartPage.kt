@@ -1,5 +1,6 @@
 package com.enesay.movieapp.ui.views.Cart
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -98,7 +99,7 @@ fun CartPage(navController: NavHostController) {
     val totalPrice = cartItems.sumOf { it.price * it.orderAmount }
 
     LaunchedEffect(true) {
-        Log.d("cart page", "LaunchedEffect")
+        Log.d("cart page", "$groupedMovies")
         cartViewmodel.getCartMovies()
     }
 
@@ -211,7 +212,13 @@ fun CartPage(navController: NavHostController) {
                             .defaultMinSize(minWidth = 200.dp)
                             .padding(end = 10.dp),
                         onClick = { /* Confirm Cart action */
-                            navController.navigate("payment")
+//                            val movieJson = Gson().toJson(groupedMovies)
+//                            navController.navigate("payment/${Uri.encode(Gson().toJson(movieJson))}")
+
+                            val cartItemsJson = Uri.encode(Gson().toJson(cartItems))
+
+                            navController.navigate("payment?groupedMovies=$cartItemsJson")
+
                         },
                         shape = RectangleShape,
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
