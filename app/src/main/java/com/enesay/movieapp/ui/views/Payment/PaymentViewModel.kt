@@ -3,9 +3,10 @@ package com.enesay.movieapp.ui.views.Payment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.enesay.movieapp.data.model.Card
-import com.enesay.movieapp.data.model.Movie
 import com.enesay.movieapp.data.model.Order
 import com.enesay.movieapp.data.repository.PaymentRepository
+import com.enesay.movieapp.ui.views.Cart.CartViewModel
+import com.enesay.movieapp.ui.views.Order.OrderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PaymentViewModel @Inject constructor(private val repository: PaymentRepository) :
+class PaymentViewModel @Inject constructor(private val repository: PaymentRepository,
+                                            private val cartViewModel: CartViewModel
+) :
     ViewModel() {
     private val _cards = MutableStateFlow<List<Card>>(emptyList())
     val cards: StateFlow<List<Card>> get() = _cards
@@ -21,17 +24,22 @@ class PaymentViewModel @Inject constructor(private val repository: PaymentReposi
     private val _orders = MutableStateFlow<List<Order>>(emptyList())
     val orders: StateFlow<List<Order>> get() = _orders
 
-    fun fetchCards(userId: String) {
-        viewModelScope.launch {
-            _cards.value = repository.getCards(userId)
-        }
-    }
+    private val _orderState = MutableStateFlow<OrderState>(OrderState.Idle)
+    val orderState: StateFlow<OrderState> get() = _orderState
+
 
     fun fetchOrders(userId: String) {
         viewModelScope.launch {
             _orders.value = repository.getOrders(userId)
         }
     }
+
+    fun fetchCards(userId: String) {
+        viewModelScope.launch {
+            _cards.value = repository.getCards(userId)
+        }
+    }
+
 
     fun addCard(userId: String, card: Card) {
         viewModelScope.launch {
@@ -56,8 +64,14 @@ class PaymentViewModel @Inject constructor(private val repository: PaymentReposi
 
     fun addOrder(userId: String, order: Order) {
         viewModelScope.launch {
-            repository.addOrder(userId, order)
-            fetchOrders(userId)
+            _orderState.value = OrderState.Loading
+            try {
+                repository.addOrder(userId, order) // Add the order to Firestore
+                //cartViewModel.clearCart() // Clear the cart after order creation
+                _orderState.value = OrderState.Success
+            } catch (e: Exception) {
+                _orderState.value = OrderState.Error(e.localizedMessage ?: "An error occurred")
+            }
         }
     }
 

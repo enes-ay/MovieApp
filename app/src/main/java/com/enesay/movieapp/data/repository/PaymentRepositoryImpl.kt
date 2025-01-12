@@ -33,11 +33,11 @@ class PaymentRepositoryImpl @Inject constructor(private val usersCollection: Col
     }
 
     override suspend fun updateOrder(userId: String, order: Order) {
-        usersCollection.document(userId).collection("orders").document(order.orderId).set(order).await()
+       // usersCollection.document(userId).collection("orders").document(order.orderId).set(order).await()
     }
 
     override suspend fun getOrders(userId: String): List<Order> {
         val snapshot = usersCollection.document(userId).collection("orders").get().await()
-        return snapshot.documents.mapNotNull { it.toObject(Order::class.java)?.copy(orderId = it.id) }
+        return  snapshot.documents.mapNotNull { it.toObject(Order::class.java)?.copy(orderId = it.id) }
     }
 }
