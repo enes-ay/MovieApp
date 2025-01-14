@@ -35,4 +35,8 @@
     <string name="txt_saved_cards">Kayıtlı Kartlar</string>
     <string name="txt_confirm_payment">Ödemeyi Onayla</string>
     <string name="txt_my_orders">Siparişlerim</string>
+    <string name="txt_delete_all_items">Tüm filmleri sil</string>
+    <string name="txt_delete_all_cart">Sepeti boşaltmak istediğinizden emin misiniz?</string>
+    <string name="txt_yes">Evet</string>
+    <string name="txt_no">Hayır</string>
 </resources>

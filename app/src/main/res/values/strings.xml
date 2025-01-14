@@ -35,4 +35,8 @@
     <string name="txt_saved_cards">Saved Cards</string>
     <string name="txt_confirm_payment">Confirm Payment</string>
     <string name="txt_my_orders">My Orders</string>
+    <string name="txt_delete_all_items">Delete All Items</string>
+    <string name="txt_delete_all_cart">Are you sure you want to empty your cart?</string>
+    <string name="txt_yes">Yes</string>
+    <string name="txt_no">No</string>
 </resources>

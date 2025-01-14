@@ -3,8 +3,10 @@ package com.enesay.movieapp.ui.views.Payment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.enesay.movieapp.data.model.Card
+import com.enesay.movieapp.data.model.MovieCart
 import com.enesay.movieapp.data.model.Order
 import com.enesay.movieapp.data.repository.PaymentRepository
+import com.enesay.movieapp.domain.usecase.DeleteAllItemsUseCase
 import com.enesay.movieapp.ui.views.Cart.CartViewModel
 import com.enesay.movieapp.ui.views.Order.OrderState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,8 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PaymentViewModel @Inject constructor(private val repository: PaymentRepository,
-                                            private val cartViewModel: CartViewModel
-) :
+    private val deleteAllItemsUseCase: DeleteAllItemsUseCase) :
     ViewModel() {
     private val _cards = MutableStateFlow<List<Card>>(emptyList())
     val cards: StateFlow<List<Card>> get() = _cards
@@ -86,6 +87,17 @@ class PaymentViewModel @Inject constructor(private val repository: PaymentReposi
         viewModelScope.launch {
             repository.updateOrder(userId, order)
             fetchOrders(userId)
+        }
+    }
+
+    fun deleteAllCartItems(movieList: List<MovieCart>){
+        viewModelScope.launch {
+            try {
+                deleteAllItemsUseCase.deleteAllItemsCart(movieList = movieList, "enes_ay")
+            }
+            catch (e: Exception){
+                e.printStackTrace()
+            }
         }
     }
 }

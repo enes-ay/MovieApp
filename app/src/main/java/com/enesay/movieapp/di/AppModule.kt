@@ -3,6 +3,8 @@ package com.enesay.movieapp.di
 import com.enesay.movieapp.data.datasource.MovieDataSource
 import com.enesay.movieapp.data.repository.AuthRepository
 import com.enesay.movieapp.data.repository.MovieRepository
+import com.enesay.movieapp.data.repository_refactor.CartRepositoryImpl
+import com.enesay.movieapp.domain.repository.CartRepository
 import com.enesay.movieapp.service.ApiUtils
 import com.enesay.movieapp.service.GoogleAccountService
 import com.enesay.movieapp.service.MovieService
@@ -49,7 +51,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCartViewModel(movieRepository: MovieRepository): CartViewModel {
-        return CartViewModel(movieRepository = movieRepository)
+    fun ProvideCartRepositor(service: MovieService) : CartRepository {
+        return CartRepositoryImpl(service)
     }
 }

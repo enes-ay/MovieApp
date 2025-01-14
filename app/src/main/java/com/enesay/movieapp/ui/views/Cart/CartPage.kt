@@ -28,6 +28,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -67,6 +69,7 @@ import androidx.navigation.NavHostController
 import com.enesay.movieapp.R
 import com.enesay.movieapp.data.model.Movie
 import com.enesay.movieapp.data.model.MovieCart
+import com.enesay.movieapp.ui.components.SimpleDialog
 import com.enesay.movieapp.ui.theme.PrimaryBlack
 import com.enesay.movieapp.ui.theme.PrimaryWhite
 import com.enesay.movieapp.utils.Constants.IMAGE_BASE_URL
@@ -115,7 +118,20 @@ fun CartPage(navController: NavHostController) {
                         fontWeight = FontWeight.Bold
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black),
+                actions = {
+                    if (cartItems.isNotEmpty()) {
+                        IconButton(onClick = {
+                            cartViewmodel.deleteAllMovies()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete, // Çöp kutusu simgesi
+                                contentDescription = stringResource(id = R.string.txt_delete_all_cart),
+                                tint = Color.White
+                            )
+                        }
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -291,7 +307,7 @@ fun CartItem(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = 8.dp)
-                    .weight(1.3f),
+                        .weight(1.3f),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(

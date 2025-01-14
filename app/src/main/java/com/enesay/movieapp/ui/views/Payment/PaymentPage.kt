@@ -134,7 +134,13 @@ fun PaymentPage(navController: NavHostController, cartItems: List<MovieCart>) {
 
         when (orderState) {
             is OrderState.Success -> {
-                navController.navigate("orders")
+                paymentViewModel.deleteAllCartItems(cartItems)
+                navController.navigate("orders"){
+                    popUpTo("cart"){
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
             }
             is OrderState.Error -> {
                 // Show an error message (optional)

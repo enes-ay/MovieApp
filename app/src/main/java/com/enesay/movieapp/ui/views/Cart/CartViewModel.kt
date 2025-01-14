@@ -11,6 +11,7 @@ import com.enesay.movieapp.data.model.Movie
 import com.enesay.movieapp.data.model.MovieCart
 import com.enesay.movieapp.data.model.MovieCartResponse
 import com.enesay.movieapp.data.repository.MovieRepository
+import com.enesay.movieapp.domain.usecase.DeleteAllItemsUseCase
 import com.enesay.movieapp.ui.views.BottomNavItem
 import com.enesay.movieapp.ui.views.Home.MoviesUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CartViewModel @Inject constructor(val movieRepository: MovieRepository) : ViewModel()  {
+class CartViewModel @Inject constructor(
+    val movieRepository: MovieRepository,
+    var deleteAllItemsUseCase: DeleteAllItemsUseCase
+) : ViewModel() {
     private val _cartItems = MutableLiveData<List<MovieCart>>()
     val cartItems: LiveData<List<MovieCart>> = _cartItems
 
@@ -32,7 +36,7 @@ class CartViewModel @Inject constructor(val movieRepository: MovieRepository) : 
         getCartMovies()
     }
 
-    fun getCartMovies(){
+    fun getCartMovies() {
         viewModelScope.launch {
             _cartMovieState.value = CartUiState.Loading
             delay(500)
@@ -43,11 +47,31 @@ class CartViewModel @Inject constructor(val movieRepository: MovieRepository) : 
         }
     }
 
-    fun addToCart(movie_name: String, movie_image: String, movie_price: Int, movie_category: String, movie_rating: Double, movie_year: Int, movie_director: String, movie_description: String, amount: Int) {
-       viewModelScope.launch {
-           movieRepository.addMovieToCart(movie_name, movie_image, movie_price, movie_category, movie_rating, movie_year, movie_director, movie_description, amount)
-           delay(1000)
-       }
+    fun addToCart(
+        movie_name: String,
+        movie_image: String,
+        movie_price: Int,
+        movie_category: String,
+        movie_rating: Double,
+        movie_year: Int,
+        movie_director: String,
+        movie_description: String,
+        amount: Int
+    ) {
+        viewModelScope.launch {
+            movieRepository.addMovieToCart(
+                movie_name,
+                movie_image,
+                movie_price,
+                movie_category,
+                movie_rating,
+                movie_year,
+                movie_director,
+                movie_description,
+                amount
+            )
+            delay(1000)
+        }
         getCartMovies()
     }
 
@@ -60,5 +84,13 @@ class CartViewModel @Inject constructor(val movieRepository: MovieRepository) : 
                 _cartItems.value = _cartItems.value?.filter { it.cartId != cartId }
             }
         }
+    }
+
+    fun deleteAllMovies() {
+        viewModelScope.launch {
+            _cartItems.value?.let { deleteAllItemsUseCase.deleteAllItemsCart(it, username = "enes_ay") }
+            _cartItems.value = emptyList()
+        }
+        getCartMovies()
     }
 }
