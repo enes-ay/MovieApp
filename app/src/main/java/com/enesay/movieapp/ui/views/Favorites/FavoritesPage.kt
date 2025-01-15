@@ -90,7 +90,7 @@ fun FavoritesPage(navController: NavController) {
                 },
                 onConfirm = {
                     navController.navigate("login") {
-                        popUpTo(0) {
+                        popUpTo("favorites") {
                             inclusive = true
                         }
                     }
@@ -122,8 +122,8 @@ fun FavoritesPage(navController: NavController) {
                     }
                 },
                 onConfirm = {
-                    navController.navigate("login") {
-                        popUpTo(0) {
+                    navController.navigate("login"){
+                        popUpTo("favorites"){
                             inclusive = true
                         }
                     }
@@ -137,7 +137,7 @@ fun FavoritesPage(navController: NavController) {
                     .padding(paddingValues),
                 contentPadding = PaddingValues(
                     bottom = WindowInsets.systemBars.asPaddingValues()
-                        .calculateBottomPadding() + 56.dp // Bottom nav yüksekliğini ekle
+                        .calculateBottomPadding() + 56.dp // Padding for bottom bar
                 )
             ) {
                 favoriteMovies?.let { movies ->

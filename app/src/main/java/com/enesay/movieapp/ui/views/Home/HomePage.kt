@@ -25,34 +25,27 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -72,7 +65,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -100,9 +92,6 @@ fun HomePage(navController: NavController) {
     val currentUserId = loginViewModel.currentUser.value
     val moviesState by homeViewModel.moviesState
     var searchQuery by remember { mutableStateOf("") }
-//    var filteredMovieList = movies?.filter { movie ->
-//        movie.name.contains(searchQuery, ignoreCase = true)
-//    } ?: listOf() // Arama terimine göre filtreleme
     val focusManager = LocalFocusManager.current  // search focus kontrol
     var isFocused by remember { mutableStateOf(false) }
     val sortOption by homeViewModel.sortOption.collectAsState()
@@ -114,6 +103,7 @@ fun HomePage(navController: NavController) {
         homeViewModel.getMovies()
         currentUserId?.let { favoritesViewModel.getFavoriteMovies(it) }
         Log.d("home", "$currentUserId")
+        Log.d("launcg", "home")
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -229,6 +219,7 @@ fun HomePage(navController: NavController) {
                     Button(
                         onClick = {
                             // Handle filter logic
+                            navController.navigate("movieFilter")
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlack),
                         shape = RoundedCornerShape(8.dp),
@@ -268,17 +259,10 @@ fun HomePage(navController: NavController) {
             ShowLoginWarningDialog(showDialog = showLoginWarningDialog,
                 onDismiss = {
                     showLoginWarningDialog = false
-//                    navController.navigate("home") {
-//                        popUpTo("favorites") {
-//                            inclusive = true
-//                        }
-//                    }
                 },
                 onConfirm = {
-                    navController.navigate("login") {
-                        popUpTo(0) {
-                            inclusive = true
-                        }
+                    navController.navigate("login"){
+                        popUpTo("home")
                     }
                     showLoginWarningDialog = false
                 })
@@ -429,7 +413,6 @@ fun MovieCard(
     onFavoriteClick: (Movie) -> Boolean,
     isFavorite: Boolean = false
 ) {
-    var count by remember { mutableStateOf(initialCount) }
     var isFavorite by remember { mutableStateOf(isFavorite) }
 
     Card(
@@ -457,8 +440,6 @@ fun MovieCard(
             // Top-right corner favorite button
             IconButton(
                 onClick = {
-//                    isFavorite = !isFavorite
-//                    onFavoriteClick(movie)
                     val canToggleFavorite =
                         onFavoriteClick(movie) // User auth check for adding favorites
                     if (canToggleFavorite) {
