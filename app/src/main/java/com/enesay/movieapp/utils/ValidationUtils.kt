@@ -30,6 +30,7 @@ object ValidationUtils {
 
     fun validatePassword(password: String): String? {
         val errors = mutableListOf<String>()
+        val allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!.,+$?-_%"
 
         if (password.isBlank()) return "Password cannot be empty"
 
@@ -37,7 +38,9 @@ object ValidationUtils {
         if (!password.any { it.isUpperCase() }) errors.add("one uppercase letter")
         if (!password.any { it.isLowerCase() }) errors.add("one lowercase letter")
         if (!password.any { it.isDigit() }) errors.add("one digit")
-        if (!password.any { "!@#\$%^&+=.".contains(it) }) errors.add("one special character (!@#\$%^&+=.)")
+        if (!password.any { "!.,+$?-_%".contains(it) }) errors.add("one special character (!.,+$?-_%)")
+
+        if (password.any { it !in allowedCharacters }) errors.add("only alphanumeric and special characters (!.,+$?-_%) are allowed")
 
         return if (errors.isEmpty()) null else "Password must contain at least ${errors.joinToString(", ")}"
     }

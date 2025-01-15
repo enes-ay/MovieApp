@@ -136,7 +136,7 @@ fun RegisterPage(navController: NavController) {
                                 emailError.value = errors["email"]
                                 passwordError.value = errors["password"]
 
-                                if (emailError.value == null && passwordError.value == null) {
+                                if (emailError.value == null && passwordError.value == null && nameError.value == null && surnameError.value == null) {
                                     registerViewmodel.signUp(
                                         email.value,
                                         password.value,
