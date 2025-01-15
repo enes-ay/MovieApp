@@ -39,4 +39,5 @@
     <string name="txt_delete_all_cart">Sepeti boşaltmak istediğinizden emin misiniz?</string>
     <string name="txt_yes">Evet</string>
     <string name="txt_no">Hayır</string>
+    <string name="txt_add_new_card">Yeni Kart Ekle</string>
 </resources>
