@@ -1,5 +1,6 @@
 package com.enesay.movieapp.di
 
+import android.content.Context
 import com.enesay.movieapp.data.datasource.MovieDataSource
 import com.enesay.movieapp.data.repository.AuthRepository
 import com.enesay.movieapp.data.repository.MovieRepository
@@ -9,11 +10,13 @@ import com.enesay.movieapp.service.ApiUtils
 import com.enesay.movieapp.service.GoogleAccountService
 import com.enesay.movieapp.service.MovieService
 import com.enesay.movieapp.ui.views.Cart.CartViewModel
+import com.enesay.movieapp.utils.NetworkMonitorHelper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -51,7 +54,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun ProvideCartRepositor(service: MovieService) : CartRepository {
+    fun ProvideCartRepository(service: MovieService) : CartRepository {
         return CartRepositoryImpl(service)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNetworkMonitor(@ApplicationContext context: Context): NetworkMonitorHelper {
+        return NetworkMonitorHelper(context)
     }
 }

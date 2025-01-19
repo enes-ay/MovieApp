@@ -40,4 +40,6 @@
     <string name="txt_yes">Yes</string>
     <string name="txt_no">No</string>
     <string name="txt_add_new_card">Add New Card</string>
+    <string name="txt_no_internet_connection">No Internet Connection</string>
+    <string name="txt_no_internet_connection_message">Please check your internet connection and try again.</string>
 </resources>

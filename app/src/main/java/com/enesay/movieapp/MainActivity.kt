@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.enesay.movieapp.ui.components.BottomBarNavigation
+import com.enesay.movieapp.ui.components.NetworkStatusDialog
 import com.enesay.movieapp.ui.navigation.AppNavigation
 import com.enesay.movieapp.ui.theme.MovieAppTheme
 import com.enesay.movieapp.ui.views.BottomNavItem
@@ -48,7 +49,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                     }) { paddingValues ->
-
+                    NetworkStatusDialog()
                     AppNavigation(navController = navController, paddingValues = paddingValues)
 
                 }

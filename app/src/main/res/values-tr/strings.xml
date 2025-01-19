@@ -40,4 +40,6 @@
     <string name="txt_yes">Evet</string>
     <string name="txt_no">Hayır</string>
     <string name="txt_add_new_card">Yeni Kart Ekle</string>
+    <string name="txt_no_internet_connection">İnternet Bağlantısı Yok</string>
+    <string name="txt_no_internet_connection_message">İnternet bağlantınızı kontrol edin ve tekrar deneyin.</string>
 </resources>
